@@ -1,0 +1,58 @@
+<div id="holdings-wrapper">
+    <div class="card">
+        <div class="stat-row">
+            <div class="stat">
+                <div class="label">Total value</div>
+                <div class="value">${{ portfolio.total_value|floatformat:2 }}</div>
+            </div>
+            <div class="stat">
+                <div class="label">Total cost</div>
+                <div class="value">${{ portfolio.total_cost|floatformat:2 }}</div>
+            </div>
+            <div class="stat">
+                <div class="label">Gain / loss</div>
+                <div class="value {% if portfolio.total_gain_loss >= 0 %}gain{% else %}loss{% endif %}">
+                    ${{ portfolio.total_gain_loss|floatformat:2 }} ({{ portfolio.total_gain_loss_pct|floatformat:1 }}%)
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% if portfolio.holdings %}
+    <table>
+        <thead>
+            <tr>
+                <th>Symbol</th>
+                <th>Name</th>
+                <th>Type</th>
+                <th>Quantity</th>
+                <th>Cost/Unit</th>
+                <th>Price</th>
+                <th>Value</th>
+                <th>Gain/Loss</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="holdings-body">
+            {% for holding in portfolio.holdings %}
+                {% include "portfolio/_holding_row.html" %}
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+        <p>No holdings yet — add your first one below.</p>
+    {% endif %}
+
+    <div class="card">
+        <h3>Add a holding</h3>
+        <form class="stacked"
+              hx-post="{% url 'portfolio:holding_add' %}"
+              hx-target="#holdings-wrapper"
+              hx-swap="outerHTML"
+              hx-on::after-request="if(event.detail.successful) this.reset()">
+            {% csrf_token %}
+            {{ holding_form.as_p }}
+            <button type="submit">Add holding</button>
+        </form>
+    </div>
+</div>

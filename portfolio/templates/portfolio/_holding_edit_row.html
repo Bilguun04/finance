@@ -1,0 +1,28 @@
+<tr id="holding-row-{{ holding.id }}"
+    hx-post="{% url 'portfolio:holding_edit' holding.id %}"
+    hx-target="#holdings-wrapper"
+    hx-swap="outerHTML"
+    hx-trigger="click from:.save-btn">
+    <td>{{ form.symbol }}</td>
+    <td>{{ form.name }}</td>
+    <td>{{ form.asset_type }}</td>
+    <td>{{ form.quantity }}</td>
+    <td>{{ form.cost_basis_per_unit }}</td>
+    <td>{{ form.current_price }}</td>
+    <td colspan="2">
+        <button type="button" class="btn save-btn">Save</button>
+        <a class="btn secondary"
+           href="{% url 'portfolio:detail' %}"
+           hx-get="{% url 'portfolio:detail' %}"
+           hx-select="#holdings-wrapper"
+           hx-target="#holdings-wrapper"
+           hx-swap="outerHTML">
+            Cancel
+        </a>
+    </td>
+</tr>
+{% if form.errors %}
+<tr>
+    <td colspan="9"><ul class="errorlist">{{ form.errors }}</ul></td>
+</tr>
+{% endif %}

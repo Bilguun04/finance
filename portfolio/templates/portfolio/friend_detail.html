@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block title %}{{ friend_display_name }}'s portfolio{% endblock %}
+{% block content %}
+<h1>{{ friend_display_name }}'s portfolio</h1>
+<div class="card">
+    <div class="stat-row">
+        <div class="stat">
+            <div class="label">Total value</div>
+            <div class="value">${{ portfolio.total_value|floatformat:2 }}</div>
+        </div>
+        <div class="stat">
+            <div class="label">Total cost</div>
+            <div class="value">${{ portfolio.total_cost|floatformat:2 }}</div>
+        </div>
+        <div class="stat">
+            <div class="label">Gain / loss</div>
+            <div class="value {% if portfolio.total_gain_loss >= 0 %}gain{% else %}loss{% endif %}">
+                ${{ portfolio.total_gain_loss|floatformat:2 }} ({{ portfolio.total_gain_loss_pct|floatformat:1 }}%)
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if portfolio.holdings %}
+<table>
+    <thead>
+        <tr>
+            <th>Symbol</th>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Quantity</th>
+            <th>Cost/Unit</th>
+            <th>Price</th>
+            <th>Value</th>
+            <th>Gain/Loss</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for holding in portfolio.holdings %}
+        <tr>
+            <td>{{ holding.symbol }}</td>
+            <td>{{ holding.name }}</td>
+            <td>{{ holding.get_asset_type_display }}</td>
+            <td>{{ holding.quantity }}</td>
+            <td>{{ holding.cost_basis_per_unit }}</td>
+            <td>{{ holding.current_price }}</td>
+            <td>{{ holding.market_value|floatformat:2 }}</td>
+            <td class="{% if holding.gain_loss >= 0 %}gain{% else %}loss{% endif %}">
+                {{ holding.gain_loss|floatformat:2 }} ({{ holding.gain_loss_pct|floatformat:1 }}%)
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p>No holdings yet.</p>
+{% endif %}
+{% endblock %}

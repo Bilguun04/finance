@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% block title %}Sign up{% endblock %}
+{% block content %}
+<h1>Create your account</h1>
+<form id="signup-form" class="stacked">
+    <p>
+        <label for="email">Email</label>
+        <input type="email" id="email" required>
+    </p>
+    <p>
+        <label for="password">Password</label>
+        <input type="password" id="password" minlength="6" required>
+    </p>
+    <button type="submit">Sign up</button>
+</form>
+<button type="button" id="google-signin" class="btn secondary">Sign up with Google</button>
+<p id="signup-error" class="errorlist"></p>
+<p>Already have an account? <a href="{% url 'account:login' %}">Log in</a></p>
+
+<script type="module">
+    function onReady(callback) {
+        if (window.firebaseAuth) {
+            callback();
+        } else {
+            window.addEventListener("firebase-auth-ready", callback, { once: true });
+        }
+    }
+
+    onReady(() => {
+        const {
+            auth,
+            createUserWithEmailAndPassword,
+            signInWithPopup,
+            GoogleAuthProvider,
+            postSession,
+        } = window.firebaseAuth;
+        const errorBox = document.getElementById("signup-error");
+
+        async function completeSignup(userCredential) {
+            const idToken = await userCredential.user.getIdToken();
+            const resp = await postSession(idToken);
+            if (resp.ok) {
+                window.location.href = "{% url 'core:dashboard' %}";
+            } else {
+                errorBox.textContent = "Sign up failed. Please try again.";
+            }
+        }
+
+        document.getElementById("signup-form").addEventListener("submit", async (event) => {
+            event.preventDefault();
+            errorBox.textContent = "";
+            const email = document.getElementById("email").value;
+            const password = document.getElementById("password").value;
+            try {
+                const credential = await createUserWithEmailAndPassword(auth, email, password);
+                await completeSignup(credential);
+            } catch (err) {
+                errorBox.textContent = "Could not create account (email may already be in use).";
+            }
+        });
+
+        document.getElementById("google-signin").addEventListener("click", async () => {
+            errorBox.textContent = "";
+            try {
+                const credential = await signInWithPopup(auth, new GoogleAuthProvider());
+                await completeSignup(credential);
+            } catch (err) {
+                errorBox.textContent = "Google sign-in failed.";
+            }
+        });
+    });
+</script>
+{% endblock %}

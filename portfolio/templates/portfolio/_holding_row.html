@@ -1,0 +1,31 @@
+<tr id="holding-row-{{ holding.id }}">
+    <td>{{ holding.symbol }}</td>
+    <td>{{ holding.name }}</td>
+    <td>{{ holding.get_asset_type_display }}</td>
+    <td>{{ holding.quantity }}</td>
+    <td>{{ holding.cost_basis_per_unit }}</td>
+    <td>{{ holding.current_price }}</td>
+    <td>{{ holding.market_value|floatformat:2 }}</td>
+    <td class="{% if holding.gain_loss >= 0 %}gain{% else %}loss{% endif %}">
+        {{ holding.gain_loss|floatformat:2 }} ({{ holding.gain_loss_pct|floatformat:1 }}%)
+    </td>
+    <td>
+        <button
+            type="button"
+            class="btn secondary"
+            hx-get="{% url 'portfolio:holding_edit' holding.id %}"
+            hx-target="#holding-row-{{ holding.id }}"
+            hx-swap="outerHTML">
+            Edit
+        </button>
+        <button
+            type="button"
+            class="btn danger"
+            hx-delete="{% url 'portfolio:holding_delete' holding.id %}"
+            hx-target="#holdings-wrapper"
+            hx-swap="outerHTML"
+            hx-confirm="Delete {{ holding.symbol }}?">
+            Delete
+        </button>
+    </td>
+</tr>

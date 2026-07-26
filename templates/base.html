@@ -1,0 +1,100 @@
+{% load static %}<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}Finance Tracker{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/app.css' %}">
+    <script src="{% static 'js/htmx.min.js' %}" defer></script>
+    {{ firebase_web_config|json_script:"firebase-web-config" }}
+    <script type="module">
+        import {
+            initializeApp,
+        } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+        import {
+            getAuth,
+            connectAuthEmulator,
+            GoogleAuthProvider,
+            signInWithPopup,
+            signInWithEmailAndPassword,
+            createUserWithEmailAndPassword,
+            signOut,
+        } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+
+        const firebaseConfig = JSON.parse(document.getElementById("firebase-web-config").textContent);
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        {% if firebase_auth_emulator_host %}
+        connectAuthEmulator(auth, "http://{{ firebase_auth_emulator_host }}", { disableWarnings: true });
+        {% endif %}
+
+        function getCsrfToken() {
+            const match = document.cookie.match(/(?:^|;\s*)csrftoken=([^;]+)/);
+            return match ? match[1] : "";
+        }
+
+        async function postSession(idToken) {
+            return fetch("{% url 'account:create_session' %}", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": getCsrfToken(),
+                },
+                body: JSON.stringify({ idToken }),
+            });
+        }
+
+        async function logout() {
+            try {
+                await signOut(auth);
+            } finally {
+                await fetch("{% url 'account:logout' %}", {
+                    method: "POST",
+                    headers: { "X-CSRFToken": getCsrfToken() },
+                });
+                window.location.href = "{% url 'core:index' %}";
+            }
+        }
+
+        window.firebaseAuth = {
+            auth,
+            GoogleAuthProvider,
+            signInWithPopup,
+            signInWithEmailAndPassword,
+            createUserWithEmailAndPassword,
+            postSession,
+            logout,
+        };
+        window.dispatchEvent(new Event("firebase-auth-ready"));
+    </script>
+</head>
+<body hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
+    <nav class="navbar">
+        <a class="brand" href="{% url 'core:index' %}">Finance Tracker</a>
+        <div class="nav-links">
+            {% if firebase_user %}
+                <a href="{% url 'core:dashboard' %}">Dashboard</a>
+                <a href="{% url 'portfolio:detail' %}">Portfolio</a>
+                <a href="{% url 'social:friend_list' %}">Friends</a>
+                <a href="{% url 'account:profile' %}">Profile</a>
+                <button type="button" class="link-button" onclick="window.firebaseAuth.logout()">Logout</button>
+            {% else %}
+                <a href="{% url 'account:login' %}">Login</a>
+                <a href="{% url 'account:signup' %}">Sign up</a>
+            {% endif %}
+        </div>
+    </nav>
+
+    <main class="container">
+        {% if messages %}
+            <ul class="messages">
+                {% for message in messages %}
+                    <li class="message {{ message.tags }}">{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+
+        {% block content %}{% endblock %}
+    </main>
+</body>
+</html>

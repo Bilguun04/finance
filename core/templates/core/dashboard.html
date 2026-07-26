@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<h1>Welcome, {{ firebase_user.display_name|default:firebase_user.email }}</h1>
+
+<div class="card">
+    <div class="stat-row">
+        <div class="stat">
+            <div class="label">Portfolio value</div>
+            <div class="value">${{ portfolio.total_value|floatformat:2 }}</div>
+        </div>
+        <div class="stat">
+            <div class="label">Gain / loss</div>
+            <div class="value {% if portfolio.total_gain_loss >= 0 %}gain{% else %}loss{% endif %}">
+                ${{ portfolio.total_gain_loss|floatformat:2 }} ({{ portfolio.total_gain_loss_pct|floatformat:1 }}%)
+            </div>
+        </div>
+        <div class="stat">
+            <div class="label">Friends</div>
+            <div class="value">{{ friend_count }}</div>
+        </div>
+    </div>
+</div>
+
+<a class="btn" href="{% url 'portfolio:detail' %}">View portfolio</a>
+<a class="btn secondary" href="{% url 'social:friend_list' %}">
+    Friends{% if pending_count %} ({{ pending_count }} pending){% endif %}
+</a>
+{% endblock %}

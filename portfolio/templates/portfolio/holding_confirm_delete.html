@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block title %}Delete holding{% endblock %}
+{% block content %}
+<h1>Delete {{ holding.symbol }}?</h1>
+<form method="post" class="stacked">
+    {% csrf_token %}
+    <button type="submit" class="danger">Delete</button>
+    <a href="{% url 'portfolio:detail' %}" class="btn secondary">Cancel</a>
+</form>
+{% endblock %}

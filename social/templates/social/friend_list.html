@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}Friends{% endblock %}
+{% block content %}
+<h1>Friends</h1>
+<a class="btn" href="{% url 'social:friend_search' %}">Find friends</a>
+
+{% if incoming %}
+<h2>Requests</h2>
+<ul>
+    {% for req in incoming %}
+    <li>
+        {{ req.from_display_name }} wants to be friends.
+        <form method="post" action="{% url 'social:friend_request_accept' req.id %}" class="inline-form">
+            {% csrf_token %}
+            <button type="submit">Accept</button>
+        </form>
+        <form method="post" action="{% url 'social:friend_request_decline' req.id %}" class="inline-form">
+            {% csrf_token %}
+            <button type="submit" class="secondary">Decline</button>
+        </form>
+    </li>
+    {% endfor %}
+</ul>
+{% endif %}
+
+{% if outgoing %}
+<h2>Pending (sent)</h2>
+<ul>
+    {% for req in outgoing %}
+    <li>Waiting for {{ req.to_display_name }} to respond.</li>
+    {% endfor %}
+</ul>
+{% endif %}
+
+<h2>Your friends</h2>
+{% if friends %}
+<ul>
+    {% for friend in friends %}
+    <li>
+        {{ friend.display_name }}
+        <a href="{% url 'social:friend_portfolio' friend.uid %}">View portfolio</a>
+    </li>
+    {% endfor %}
+</ul>
+{% else %}
+<p>No friends yet — <a href="{% url 'social:friend_search' %}">find some</a>.</p>
+{% endif %}
+{% endblock %}

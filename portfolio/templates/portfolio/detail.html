@@ -1,0 +1,6 @@
+{% extends "base.html" %}
+{% block title %}{{ portfolio.name }}{% endblock %}
+{% block content %}
+<h1>{{ portfolio.name }}</h1>
+{% include "portfolio/_holdings_table.html" %}
+{% endblock %}

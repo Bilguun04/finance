@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}Find friends{% endblock %}
+{% block content %}
+<h1>Find friends</h1>
+<form method="get" class="stacked">
+    <p>
+        <input type="text" name="q" value="{{ query }}" placeholder="Search by name (starts with)">
+    </p>
+    <button type="submit">Search</button>
+</form>
+
+{% if query %}
+    {% if results %}
+    <ul>
+        {% for user in results %}
+        <li>
+            {{ user.display_name|default:user.email }}
+            <form method="post" action="{% url 'social:friend_request_send' user.uid %}" class="inline-form">
+                {% csrf_token %}
+                <input type="hidden" name="q" value="{{ query }}">
+                <button type="submit">Add friend</button>
+            </form>
+        </li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <p>No matching users found.</p>
+    {% endif %}
+{% endif %}
+{% endblock %}
