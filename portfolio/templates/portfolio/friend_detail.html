@@ -22,6 +22,7 @@
 </div>
 
 {% if portfolio.holdings %}
+<div class="table-wrap">
 <table>
     <thead>
         <tr>
@@ -52,7 +53,8 @@
         {% endfor %}
     </tbody>
 </table>
+</div>
 {% else %}
-<p>No holdings yet.</p>
+<div class="empty-state">No holdings yet.</div>
 {% endif %}
 {% endblock %}

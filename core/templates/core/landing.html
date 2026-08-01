@@ -1,8 +1,13 @@
 {% extends "base.html" %}
 {% block title %}Finance Tracker{% endblock %}
 {% block content %}
-<h1>Track your investments. Share with friends.</h1>
-<p>Log your holdings, watch your gains, and see how your friends' portfolios are doing — all in one place.</p>
-<a class="btn" href="{% url 'account:signup' %}">Get started</a>
-<a class="btn secondary" href="{% url 'account:login' %}">Log in</a>
+<div class="hero">
+    <span class="eyebrow">Finance Tracker</span>
+    <h1>Track your investments. Share with friends.</h1>
+    <p>Log your holdings, watch your gains, and see how your friends' portfolios are doing — all in one place.</p>
+    <div class="hero-actions">
+        <a class="btn" href="{% url 'account:signup' %}">Get started</a>
+        <a class="btn secondary" href="{% url 'account:login' %}">Log in</a>
+    </div>
+</div>
 {% endblock %}

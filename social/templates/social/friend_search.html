@@ -11,20 +11,22 @@
 
 {% if query %}
     {% if results %}
-    <ul>
+    <ul class="list-card">
         {% for user in results %}
         <li>
-            {{ user.display_name|default:user.email }}
-            <form method="post" action="{% url 'social:friend_request_send' user.uid %}" class="inline-form">
-                {% csrf_token %}
-                <input type="hidden" name="q" value="{{ query }}">
-                <button type="submit">Add friend</button>
-            </form>
+            <span class="list-name">{{ user.display_name|default:user.email }}</span>
+            <span class="list-actions">
+                <form method="post" action="{% url 'social:friend_request_send' user.uid %}" class="inline-form">
+                    {% csrf_token %}
+                    <input type="hidden" name="q" value="{{ query }}">
+                    <button type="submit">Add friend</button>
+                </form>
+            </span>
         </li>
         {% endfor %}
     </ul>
     {% else %}
-    <p>No matching users found.</p>
+    <div class="empty-state">No matching users found.</div>
     {% endif %}
 {% endif %}
 {% endblock %}
