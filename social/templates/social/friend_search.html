@@ -1,32 +1,32 @@
 {% extends "base.html" %}
 {% block title %}Find friends{% endblock %}
 {% block content %}
-<h1>Find friends</h1>
-<form method="get" class="stacked">
-    <p>
+<h1 class="mb-4 text-3xl font-bold leading-tight tracking-tight">Find friends</h1>
+<form method="get" class="mb-6 max-w-md space-y-4 [&_input]:w-full [&_input]:rounded-md [&_input]:border [&_input]:border-slate-300 [&_input]:px-3 [&_input]:py-2 [&_input]:text-slate-900">
+    <p class="m-0">
         <input type="text" name="q" value="{{ query }}" placeholder="Search by name (starts with)">
     </p>
-    <button type="submit">Search</button>
+    <button class="inline-block rounded-md border border-indigo-600 bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:border-indigo-700 hover:bg-indigo-700" type="submit">Search</button>
 </form>
 
 {% if query %}
     {% if results %}
-    <ul class="list-card">
+    <ul class="mb-6 flex list-none flex-col gap-2.5 p-0">
         {% for user in results %}
-        <li>
-            <span class="list-name">{{ user.display_name|default:user.email }}</span>
-            <span class="list-actions">
-                <form method="post" action="{% url 'social:friend_request_send' user.uid %}" class="inline-form">
+        <li class="flex items-center justify-between gap-4 rounded-lg border border-slate-200 bg-white px-4 py-3.5 shadow-sm">
+            <span class="font-semibold">{{ user.display_name|default:user.email }}</span>
+            <span class="flex shrink-0 items-center gap-2">
+                <form method="post" action="{% url 'social:friend_request_send' user.uid %}" class="m-0 inline">
                     {% csrf_token %}
                     <input type="hidden" name="q" value="{{ query }}">
-                    <button type="submit">Add friend</button>
+                    <button class="inline-block rounded-md border border-indigo-600 bg-indigo-600 px-3 py-1.5 text-sm font-semibold text-white hover:border-indigo-700 hover:bg-indigo-700" type="submit">Add friend</button>
                 </form>
             </span>
         </li>
         {% endfor %}
     </ul>
     {% else %}
-    <div class="empty-state">No matching users found.</div>
+    <div class="mb-6 rounded-lg border border-dashed border-slate-300 px-6 py-10 text-center text-slate-400">No matching users found.</div>
     {% endif %}
 {% endif %}
 {% endblock %}

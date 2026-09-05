@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block title %}Profile{% endblock %}
 {% block content %}
-<h1>{{ profile.display_name|default:firebase_user.email }}</h1>
-<p>{{ profile.bio|default:"No bio yet." }}</p>
-<a class="btn secondary" href="{% url 'account:profile_edit' %}">Edit profile</a>
+<h1 class="mb-3 text-3xl font-bold leading-tight tracking-tight">{{ profile.display_name|default:firebase_user.email }}</h1>
+<p class="mb-4 text-slate-500">{{ profile.bio|default:"No bio yet." }}</p>
+<a class="inline-block rounded-md border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-900 no-underline hover:bg-slate-100" href="{% url 'account:profile_edit' %}">Edit profile</a>
 {% endblock %}

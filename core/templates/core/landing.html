@@ -1,13 +1,13 @@
 {% extends "base.html" %}
 {% block title %}Finance Tracker{% endblock %}
 {% block content %}
-<div class="hero">
-    <span class="eyebrow">Finance Tracker</span>
-    <h1>Track your investments. Share with friends.</h1>
-    <p>Log your holdings, watch your gains, and see how your friends' portfolios are doing — all in one place.</p>
-    <div class="hero-actions">
-        <a class="btn" href="{% url 'account:signup' %}">Get started</a>
-        <a class="btn secondary" href="{% url 'account:login' %}">Log in</a>
+<div class="py-14 text-left">
+    <span class="mb-4 inline-block rounded-full bg-indigo-50 px-3 py-1 text-xs font-bold uppercase tracking-wider text-indigo-600">Finance Tracker</span>
+    <h1 class="mb-3 max-w-xl text-4xl font-bold leading-tight tracking-tight text-slate-900">Track your investments. Share with friends.</h1>
+    <p class="mb-7 max-w-2xl text-lg text-slate-500">Log your holdings, watch your gains, and see how your friends' portfolios are doing — all in one place.</p>
+    <div class="flex flex-wrap gap-3">
+        <a class="inline-block rounded-md border border-indigo-600 bg-indigo-600 px-4 py-2 text-sm font-semibold text-white no-underline transition-colors hover:border-indigo-700 hover:bg-indigo-700" href="{% url 'account:signup' %}">Get started</a>
+        <a class="inline-block rounded-md border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-900 no-underline transition-colors hover:bg-slate-100" href="{% url 'account:login' %}">Log in</a>
     </div>
 </div>
 {% endblock %}
