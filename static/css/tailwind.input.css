@@ -36,6 +36,13 @@
     --font-sans: "IBM Plex Sans Condensed", sans-serif;
 }
 
+@utility link {
+    @apply text-sm font-medium text-slate-500 no-underline transition-colors;
+    &:hover {
+        @apply text-slate-900;
+    }
+}
+
 @source "../../templates";
 @source "../../account/templates";
 @source "../../core/templates";
