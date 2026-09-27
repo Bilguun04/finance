@@ -1,13 +1,13 @@
 from django.http import Http404
 from django.shortcuts import redirect, render
 
-from account.decorators import django_login_required
+from django.contrib.auth.decorators import login_required
 
 from . import services as pf
 from .forms import HoldingForm
 
 
-@django_login_required
+@login_required
 def portfolio_detail(request):
     uid = request.user.pk
     portfolio = pf.get_or_create_portfolio(uid)
@@ -18,7 +18,7 @@ def portfolio_detail(request):
     )
 
 
-@django_login_required
+@login_required
 def holding_add(request):
     uid = request.user.pk
 
@@ -48,7 +48,7 @@ def holding_add(request):
     return render(request, "portfolio/holding_form.html", {"form": HoldingForm(), "is_edit": False})
 
 
-@django_login_required
+@login_required
 def holding_edit(request, holding_id):
     uid = request.user.pk
     holding = pf.get_holding(uid, holding_id)
@@ -91,7 +91,7 @@ def holding_edit(request, holding_id):
     return render(request, "portfolio/holding_form.html", {"form": form, "is_edit": True})
 
 
-@django_login_required
+@login_required
 def holding_delete(request, holding_id):
     uid = request.user.pk
     holding = pf.get_holding(uid, holding_id)

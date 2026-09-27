@@ -1,6 +1,6 @@
 from django.shortcuts import redirect, render
 
-from account.decorators import django_login_required
+from django.contrib.auth.decorators import login_required
 from portfolio.services import get_or_create_portfolio
 from social.services import friend_uids, incoming_requests
 
@@ -11,7 +11,7 @@ def index(request):
     return render(request, "core/landing.html")
 
 
-@django_login_required
+@login_required
 def dashboard(request):
     uid = request.user.pk
     portfolio = get_or_create_portfolio(uid)

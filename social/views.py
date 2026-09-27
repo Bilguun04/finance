@@ -7,7 +7,7 @@ from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.views.decorators.http import require_POST
 
-from account.decorators import django_login_required
+from django.contrib.auth.decorators import login_required
 from account.services import get_profile
 from portfolio.services import get_or_create_portfolio
 
@@ -20,7 +20,7 @@ def _display_name(profile, fallback_uid):
     return profile.get("display_name") or profile.get("email") or fallback_uid
 
 
-@django_login_required
+@login_required
 def friend_search(request):
     uid = request.user.pk
     query = request.GET.get("q", "").strip()
@@ -34,7 +34,7 @@ def friend_search(request):
     return render(request, "social/friend_search.html", {"query": query, "results": results})
 
 
-@django_login_required
+@login_required
 @require_POST
 def friend_request_send(request, target_uid):
     uid = request.user.pk
@@ -52,7 +52,7 @@ def friend_request_send(request, target_uid):
     return redirect(url)
 
 
-@django_login_required
+@login_required
 @require_POST
 def friend_request_accept(request, request_id):
     uid = request.user.pk
@@ -66,7 +66,7 @@ def friend_request_accept(request, request_id):
     return redirect("social:friend_list")
 
 
-@django_login_required
+@login_required
 @require_POST
 def friend_request_decline(request, request_id):
     uid = request.user.pk
@@ -79,7 +79,7 @@ def friend_request_decline(request, request_id):
     return redirect("social:friend_list")
 
 
-@django_login_required
+@login_required
 def friend_list(request):
     uid = request.user.pk
 
@@ -102,7 +102,7 @@ def friend_list(request):
     )
 
 
-@django_login_required
+@login_required
 def friend_portfolio_view(request, target_uid):
     uid = request.user.pk
     target_user_id = int(target_uid)

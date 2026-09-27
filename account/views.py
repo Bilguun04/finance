@@ -2,7 +2,7 @@ from django.contrib.auth import login, logout
 from django.shortcuts import redirect, render
 from django.utils.http import url_has_allowed_host_and_scheme
 
-from .decorators import django_login_required
+from django.contrib.auth.decorators import login_required
 from .forms import LoginForm, ProfileEditForm, SignupForm
 from .services import create_profile_if_missing, get_profile, update_profile
 
@@ -37,13 +37,13 @@ def logout_view(request):
     return redirect("core:index")
 
 
-@django_login_required
+@login_required
 def profile_view(request):
     profile = get_profile(request.user.pk) or {}
     return render(request, "account/profile.html", {"profile": profile})
 
 
-@django_login_required
+@login_required
 def profile_edit(request):
     uid = request.user.pk
     profile = get_profile(uid) or {}
