@@ -2,16 +2,16 @@ from decimal import Decimal
 
 from django.urls import reverse
 
-from finance.testing import FirestoreTestCase
+from finance.testing import FinanceTestCase
 
-from . import firestore as pf
+from . import services as pf
 
 
-class HoldingComputedFieldsTests(FirestoreTestCase):
+class HoldingComputedFieldsTests(FinanceTestCase):
     def test_market_value_and_gain_loss(self):
         user = self.create_user("alice@example.com")
         holding = pf.add_holding(
-            user.uid,
+            user.pk,
             {
                 "symbol": "AAPL",
                 "name": "",
@@ -29,7 +29,7 @@ class HoldingComputedFieldsTests(FirestoreTestCase):
     def test_portfolio_totals_sum_across_holdings(self):
         user = self.create_user("alice@example.com")
         pf.add_holding(
-            user.uid,
+            user.pk,
             {
                 "symbol": "AAPL",
                 "name": "",
@@ -40,7 +40,7 @@ class HoldingComputedFieldsTests(FirestoreTestCase):
             },
         )
         pf.add_holding(
-            user.uid,
+            user.pk,
             {
                 "symbol": "BTC",
                 "name": "",
@@ -50,19 +50,19 @@ class HoldingComputedFieldsTests(FirestoreTestCase):
                 "current_price": Decimal("18000.00"),
             },
         )
-        portfolio = pf.get_or_create_portfolio(user.uid)
+        portfolio = pf.get_or_create_portfolio(user.pk)
         self.assertEqual(portfolio.total_value, Decimal("19500.00"))
         self.assertEqual(portfolio.total_cost, Decimal("21000.00"))
         self.assertEqual(portfolio.total_gain_loss, Decimal("-1500.00"))
 
 
-class HoldingOwnershipTests(FirestoreTestCase):
+class HoldingOwnershipTests(FinanceTestCase):
     def setUp(self):
         super().setUp()
         self.user_a = self.create_user("alice@example.com")
         self.user_b = self.create_user("bob@example.com")
         self.holding_a = pf.add_holding(
-            self.user_a.uid,
+            self.user_a.pk,
             {
                 "symbol": "AAPL",
                 "name": "",
@@ -87,7 +87,7 @@ class HoldingOwnershipTests(FirestoreTestCase):
         self.login("bob@example.com")
         response = self.client.post(reverse("portfolio:holding_delete", args=[self.holding_a.id]))
         self.assertEqual(response.status_code, 404)
-        self.assertIsNotNone(pf.get_holding(self.user_a.uid, self.holding_a.id))
+        self.assertIsNotNone(pf.get_holding(self.user_a.pk, self.holding_a.id))
 
     def test_owner_can_edit_own_holding(self):
         self.login("alice@example.com")
@@ -103,11 +103,11 @@ class HoldingOwnershipTests(FirestoreTestCase):
             },
         )
         self.assertRedirects(response, reverse("portfolio:detail"))
-        updated = pf.get_holding(self.user_a.uid, self.holding_a.id)
+        updated = pf.get_holding(self.user_a.pk, self.holding_a.id)
         self.assertEqual(updated.current_price, Decimal("200.00"))
 
 
-class HoldingHtmxTests(FirestoreTestCase):
+class HoldingHtmxTests(FinanceTestCase):
     def test_htmx_create_returns_partial(self):
         self.create_user("alice@example.com")
         self.login("alice@example.com")

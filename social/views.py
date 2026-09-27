@@ -7,11 +7,11 @@ from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.views.decorators.http import require_POST
 
-from account.decorators import firebase_login_required
-from account.firestore import get_profile
-from portfolio.firestore import get_or_create_portfolio
+from account.decorators import django_login_required
+from account.services import get_profile
+from portfolio.services import get_or_create_portfolio
 
-from . import firestore as sf
+from . import services as sf
 
 
 def _display_name(profile, fallback_uid):
@@ -20,9 +20,9 @@ def _display_name(profile, fallback_uid):
     return profile.get("display_name") or profile.get("email") or fallback_uid
 
 
-@firebase_login_required
+@django_login_required
 def friend_search(request):
-    uid = request.firebase_user["uid"]
+    uid = request.user.pk
     query = request.GET.get("q", "").strip()
     results = []
     if query:
@@ -34,15 +34,16 @@ def friend_search(request):
     return render(request, "social/friend_search.html", {"query": query, "results": results})
 
 
-@firebase_login_required
+@django_login_required
 @require_POST
 def friend_request_send(request, target_uid):
-    uid = request.firebase_user["uid"]
-    if target_uid != uid:
-        profile = get_profile(target_uid)
+    uid = request.user.pk
+    target_user_id = int(target_uid)
+    if target_user_id != uid:
+        profile = get_profile(target_user_id)
         if profile is not None:
-            sf.send_friend_request(uid, target_uid)
-            messages.success(request, f"Friend request sent to {_display_name(profile, target_uid)}.")
+            sf.send_friend_request(uid, target_user_id)
+            messages.success(request, f"Friend request sent to {_display_name(profile, target_user_id)}.")
 
     query = request.POST.get("q", "")
     url = reverse("social:friend_search")
@@ -51,10 +52,10 @@ def friend_request_send(request, target_uid):
     return redirect(url)
 
 
-@firebase_login_required
+@django_login_required
 @require_POST
 def friend_request_accept(request, request_id):
-    uid = request.firebase_user["uid"]
+    uid = request.user.pk
     friend_request = sf.get_friend_request(request_id)
     if friend_request is None:
         raise Http404
@@ -65,10 +66,10 @@ def friend_request_accept(request, request_id):
     return redirect("social:friend_list")
 
 
-@firebase_login_required
+@django_login_required
 @require_POST
 def friend_request_decline(request, request_id):
-    uid = request.firebase_user["uid"]
+    uid = request.user.pk
     friend_request = sf.get_friend_request(request_id)
     if friend_request is None:
         raise Http404
@@ -78,9 +79,9 @@ def friend_request_decline(request, request_id):
     return redirect("social:friend_list")
 
 
-@firebase_login_required
+@django_login_required
 def friend_list(request):
-    uid = request.firebase_user["uid"]
+    uid = request.user.pk
 
     friends = [
         {"uid": fid, "display_name": _display_name(get_profile(fid), fid)} for fid in sf.friend_uids(uid)
@@ -101,14 +102,15 @@ def friend_list(request):
     )
 
 
-@firebase_login_required
+@django_login_required
 def friend_portfolio_view(request, target_uid):
-    uid = request.firebase_user["uid"]
-    if not sf.are_friends(uid, target_uid):
+    uid = request.user.pk
+    target_user_id = int(target_uid)
+    if not sf.are_friends(uid, target_user_id):
         raise PermissionDenied
 
-    portfolio = get_or_create_portfolio(target_uid)
-    display_name = _display_name(get_profile(target_uid), target_uid)
+    portfolio = get_or_create_portfolio(target_user_id)
+    display_name = _display_name(get_profile(target_user_id), target_user_id)
     return render(
         request,
         "portfolio/friend_detail.html",

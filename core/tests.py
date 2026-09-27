@@ -2,11 +2,11 @@ from decimal import Decimal
 
 from django.urls import reverse
 
-from finance.testing import FirestoreTestCase
-from portfolio import firestore as pf
+from finance.testing import FinanceTestCase
+from portfolio import services as pf
 
 
-class CoreViewTests(FirestoreTestCase):
+class CoreViewTests(FinanceTestCase):
     def test_anonymous_sees_landing_page(self):
         response = self.client.get(reverse("core:index"))
         self.assertEqual(response.status_code, 200)
@@ -21,7 +21,7 @@ class CoreViewTests(FirestoreTestCase):
     def test_dashboard_shows_aggregated_totals(self):
         user = self.create_user("alice@example.com")
         pf.add_holding(
-            user.uid,
+            user.pk,
             {
                 "symbol": "AAPL",
                 "name": "",

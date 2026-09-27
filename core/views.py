@@ -1,19 +1,19 @@
 from django.shortcuts import redirect, render
 
-from account.decorators import firebase_login_required
-from portfolio.firestore import get_or_create_portfolio
-from social.firestore import friend_uids, incoming_requests
+from account.decorators import django_login_required
+from portfolio.services import get_or_create_portfolio
+from social.services import friend_uids, incoming_requests
 
 
 def index(request):
-    if request.firebase_user:
+    if request.user.is_authenticated:
         return redirect("core:dashboard")
     return render(request, "core/landing.html")
 
 
-@firebase_login_required
+@django_login_required
 def dashboard(request):
-    uid = request.firebase_user["uid"]
+    uid = request.user.pk
     portfolio = get_or_create_portfolio(uid)
     friend_count = len(friend_uids(uid))
     pending_count = len(incoming_requests(uid))

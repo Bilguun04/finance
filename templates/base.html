@@ -17,7 +17,7 @@
             <a class="link" href="https://github.com/bilguun04/finance">
                 Codebase
             </a>
-            {% if firebase_user %}
+            {% if user.is_authenticated %}
                 <a class="text-sm font-medium text-slate-500 no-underline transition-colors hover:text-slate-900" href="{% url 'core:dashboard' %}">
                     Dashboard
                 </a>
@@ -30,7 +30,10 @@
                 <a class="text-sm font-medium text-slate-500 no-underline transition-colors hover:text-slate-900" href="{% url 'account:profile' %}">
                     Profile
                 </a>
-                <button type="button" class="border-0 bg-transparent p-0 text-sm font-medium text-slate-500 transition-colors hover:text-slate-900" onclick="window.firebaseAuth.logout()">Logout</button>
+                <form method="post" action="{% url 'account:logout' %}" class="m-0">
+                    {% csrf_token %}
+                    <button type="submit" class="border-0 bg-transparent p-0 text-sm font-medium text-slate-500 transition-colors hover:text-slate-900">Logout</button>
+                </form>
             {% else %}
                 <a class="text-sm font-medium text-slate-500 no-underline transition-colors hover:text-slate-900" href="{% url 'account:login' %}">Login</a>
                 <a class="text-sm font-medium text-slate-500 no-underline transition-colors hover:text-slate-900" href="{% url 'account:signup' %}">Sign up</a>
