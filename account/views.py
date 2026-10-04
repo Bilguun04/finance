@@ -1,23 +1,9 @@
-from django.contrib.auth import login, logout
+from django.contrib.auth import login
 from django.shortcuts import redirect, render
-from django.utils.http import url_has_allowed_host_and_scheme
 
 from django.contrib.auth.decorators import login_required
-from .forms import LoginForm, ProfileEditForm, SignupForm
+from .forms import ProfileEditForm, SignupForm
 from .services import create_profile_if_missing, get_profile, update_profile
-
-
-def login_page(request):
-    if request.user.is_authenticated:
-        return redirect("core:dashboard")
-    next_url = request.GET.get("next", "")
-    if not url_has_allowed_host_and_scheme(next_url, allowed_hosts={request.get_host()}, require_https=request.is_secure()):
-        next_url = ""
-    form = LoginForm(request, data=request.POST or None)
-    if request.method == "POST" and form.is_valid():
-        login(request, form.get_user())
-        return redirect(next_url or "core:dashboard")
-    return render(request, "account/login.html", {"form": form, "next": next_url})
 
 
 def signup_page(request):
@@ -30,11 +16,6 @@ def signup_page(request):
         login(request, user)
         return redirect("core:dashboard")
     return render(request, "account/signup.html", {"form": form})
-
-
-def logout_view(request):
-    logout(request)
-    return redirect("core:index")
 
 
 @login_required
