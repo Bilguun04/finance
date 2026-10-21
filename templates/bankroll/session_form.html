@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block title %}{% if is_edit %}Edit session{% else %}Log session{% endif %} | Finance Tracker{% endblock %}
+
+{% block content %}
+<div class="mx-auto max-w-3xl">
+    <a href="{% url 'bankroll:dashboard' %}" class="text-sm font-semibold text-slate-500 no-underline hover:text-slate-900">&larr; Back to dashboard</a>
+    <div class="mt-5 rounded-lg border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
+        <p class="text-xs font-semibold uppercase tracking-wider text-emerald-700">Bankroll / session log</p>
+        <h1 class="mt-2 text-3xl font-semibold text-slate-900">{% if is_edit %}Edit session{% else %}Log a new session{% endif %}</h1>
+        <p class="mt-2 text-sm text-slate-500">Capture the details now so your results stay useful later.</p>
+
+        <form method="post" class="mt-8 space-y-6">
+            {% csrf_token %}
+            {% if form.non_field_errors %}
+                <div class="rounded-md bg-red-50 px-4 py-3 text-sm text-red-700">{{ form.non_field_errors }}</div>
+            {% endif %}
+            <div class="grid gap-5 sm:grid-cols-2">
+                {% for field in form %}
+                    <div>
+                        <label for="{{ field.id_for_label }}" class="mb-1.5 block text-sm font-semibold text-slate-700">{{ field.label }}</label>
+                        {{ field }}
+                        {% for error in field.errors %}<p class="mt-1 text-xs text-red-600">{{ error }}</p>{% endfor %}
+                    </div>
+                {% endfor %}
+            </div>
+            <div class="flex items-center justify-end gap-4 border-t border-slate-100 pt-6">
+                <a href="{% url 'bankroll:dashboard' %}" class="text-sm font-semibold text-slate-500 no-underline hover:text-slate-900">Cancel</a>
+                <button type="submit" class="rounded-md bg-slate-900 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-emerald-700">{% if is_edit %}Save changes{% else %}Save session{% endif %}</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
