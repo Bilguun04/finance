@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django_htmx',
     'account',
+    'bankroll',
     'core',
     'portfolio',
     'social',
