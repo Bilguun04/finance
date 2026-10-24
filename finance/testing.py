@@ -1,16 +1,16 @@
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 
-from account.services import create_profile_if_missing
 
-DEFAULT_PASSWORD = "correcthorsebattery9"
+DEFAULT_PASSWORD = "SecurePassword123!"
 
 
 class FinanceTestCase(TestCase):
+    def setUp(self):
+        self.user = self.create_user("test@example.com", password=DEFAULT_PASSWORD, display_name="Test User")
 
     def create_user(self, email, password=DEFAULT_PASSWORD, display_name=None):
         user = get_user_model().objects.create_user(username=email, email=email, password=password)
-        create_profile_if_missing(user, display_name=display_name or email.split("@")[0])
         return user
 
     def login(self, email, password=DEFAULT_PASSWORD):
