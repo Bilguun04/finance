@@ -5,5 +5,5 @@ from django.contrib.auth.decorators import login_required
 
 def index(request):
     if request.user.is_authenticated:
-        return redirect("core:dashboard")
+        return redirect("bankroll:dashboard")
     return render(request, "core/landing.html")

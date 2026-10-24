@@ -18,14 +18,8 @@
                 Codebase
             </a>
             {% if user.is_authenticated %}
-                <a class="text-sm font-medium text-slate-500 no-underline transition-colors hover:text-slate-900" href="{% url 'core:dashboard' %}">
+                <a class="text-sm font-medium text-slate-500 no-underline transition-colors hover:text-slate-900" href="{% url 'bankroll:dashboard' %}">
                     Dashboard
-                </a>
-                <a class="text-sm font-medium text-slate-500 no-underline transition-colors hover:text-slate-900" href="{% url 'portfolio:detail' %}">
-                    Portfolio
-                </a>
-                <a class="text-sm font-medium text-slate-500 no-underline transition-colors hover:text-slate-900" href="{% url 'social:friend_list' %}">
-                    Friends
                 </a>
                 <a class="text-sm font-medium text-slate-500 no-underline transition-colors hover:text-slate-900" href="{% url 'account:profile' %}">
                     Profile
@@ -36,7 +30,7 @@
                 </form>
             {% else %}
                 <a class="text-sm font-medium text-slate-500 no-underline transition-colors hover:text-slate-900" href="{% url 'account:login' %}">Login</a>
-                <a class="text-sm font-medium text-slate-500 no-underline transition-colors hover:text-slate-900" href="{% url 'account:signup' %}">Sign up</a>
+                <a class="text-sm font-medium text-slate-500 no-underline transition-colors hover:text-slate-900" href="{% url 'account:register' %}">Sign up</a>
             {% endif %}
         </div>
     </nav>
