@@ -1,0 +1,152 @@
+[
+  {
+    "model": "bankroll.Session",
+    "pk": 1,
+    "fields": {
+      "host": "Playground",
+      "format": "casino",
+      "type": "blackjack",
+      "stakes": "null",
+      "date": "2026-10-18T18:00:00Z",
+      "session_start": "2026-10-18T18:00:00Z",
+      "session_end": "2026-10-18T22:30:00Z",
+      "buyin": "200",
+      "buyout": "375"
+    }
+  },
+  {
+    "model": "bankroll.Session",
+    "pk": 2,
+    "fields": {
+      "host": "Alan",
+      "format": "homegame",
+      "type": "blackjack",
+      "stakes": "5/10",
+      "date": "2026-10-17T19:00:00Z",
+      "session_start": "2026-10-17T19:00:00Z",
+      "session_end": "2026-10-17T23:00:00Z",
+      "buyin": "100",
+      "buyout": "65"
+    }
+  },
+  {
+    "model": "bankroll.Session",
+    "pk": 3,
+    "fields": {
+      "host": "Downtown Casino",
+      "format": "casino",
+      "type": "poker",
+      "stakes": "1/2",
+      "date": "2026-10-16T18:00:00Z",
+      "session_start": "2026-10-16T18:00:00Z",
+      "session_end": "2026-10-16T23:15:00Z",
+      "buyin": "300",
+      "buyout": "525"
+    }
+  },
+  {
+    "model": "bankroll.Session",
+    "pk": 4,
+    "fields": {
+      "host": "Mike",
+      "format": "homegame",
+      "type": "poker",
+      "stakes": "2/5",
+      "date": "2026-10-15T19:30:00Z",
+      "session_start": "2026-10-15T19:30:00Z",
+      "session_end": "2026-10-16T00:30:00Z",
+      "buyin": "500",
+      "buyout": "275"
+    }
+  },
+  {
+    "model": "bankroll.Session",
+    "pk": 5,
+    "fields": {
+      "host": "Riverside Casino",
+      "format": "casino",
+      "type": "blackjack",
+      "stakes": "N/A",
+      "date": "2026-10-14T17:00:00Z",
+      "session_start": "2026-10-14T17:00:00Z",
+      "session_end": "2026-10-14T20:45:00Z",
+      "buyin": "200",
+      "buyout": "410"
+    }
+  },
+  {
+    "model": "bankroll.Session",
+    "pk": 6,
+    "fields": {
+      "host": "Sarah",
+      "format": "homegame",
+      "type": "poker",
+      "stakes": "0.25/0.50",
+      "date": "2026-10-13T18:30:00Z",
+      "session_start": "2026-10-13T18:30:00Z",
+      "session_end": "2026-10-13T22:00:00Z",
+      "buyin": "100",
+      "buyout": "160"
+    }
+  },
+  {
+    "model": "bankroll.Session",
+    "pk": 7,
+    "fields": {
+      "host": "Lucky Star Casino",
+      "format": "casino",
+      "type": "roulette",
+      "stakes": "N/A",
+      "date": "2026-10-12T21:00:00Z",
+      "session_start": "2026-10-12T21:00:00Z",
+      "session_end": "2026-10-13T00:00:00Z",
+      "buyin": "150",
+      "buyout": "90"
+    }
+  },
+  {
+    "model": "bankroll.Session",
+    "pk": 8,
+    "fields": {
+      "host": "Chris",
+      "format": "homegame",
+      "type": "poker",
+      "stakes": "1/2",
+      "date": "2026-10-11T20:00:00Z",
+      "session_start": "2026-10-11T20:00:00Z",
+      "session_end": "2026-10-12T01:00:00Z",
+      "buyin": "250",
+      "buyout": "600"
+    }
+  },
+  {
+    "model": "bankroll.Session",
+    "pk": 9,
+    "fields": {
+      "host": "Metro Casino",
+      "format": "casino",
+      "type": "blackjack",
+      "stakes": "N/A",
+      "date": "2026-10-10T16:30:00Z",
+      "session_start": "2026-10-10T16:30:00Z",
+      "session_end": "2026-10-10T19:30:00Z",
+      "buyin": "300",
+      "buyout": "180"
+    }
+  },
+  {
+    "model": "bankroll.Session",
+    "pk": 10,
+    "fields": {
+      "host": "David",
+      "format": "homegame",
+      "type": "poker",
+      "stakes": "5/10",
+      "date": "2026-10-09T19:00:00Z",
+      "session_start": "2026-10-09T19:00:00Z",
+      "session_end": "2026-10-10T02:00:00Z",
+      "buyin": "1000",
+      "buyout": "1450"
+    }
+  }
+]

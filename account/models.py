@@ -1,13 +1,1 @@
-from django.conf import settings
-from django.db import models
-
-
-class Profile(models.Model):
-	user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="profile")
-	display_name = models.CharField(max_length=100, blank=True)
-	bio = models.TextField(blank=True)
-	created_at = models.DateTimeField(auto_now_add=True)
-
-	def __str__(self):
-		return self.display_name or self.user.email or self.user.username
-
+# Account model goes here. Although since we are using the default User model, we don't need to define any additional fields or methods. However, if you want to extend the User model in the future, you can do so by creating a custom User model that inherits from AbstractUser or AbstractBaseUser.
