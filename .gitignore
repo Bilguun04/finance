@@ -14,3 +14,7 @@ media/
 .ruff_cache/
 .coverage
 htmlcov/
+
+.wrangler/
+cloudflare/
+python_modules/
