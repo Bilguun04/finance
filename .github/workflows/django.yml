@@ -1,9 +1,8 @@
 name: Django CI
 
 on:
-  push:
   pull_request:
-    branches: ["staging"]
+    branches: ["staging", "production"]
 
 permissions:
   contents: read
