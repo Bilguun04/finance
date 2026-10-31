@@ -10,7 +10,7 @@
 </head>
 <body class="m-0 bg-slate-50 font-sans leading-relaxed text-slate-900 antialiased" hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
     <nav class="sticky top-0 z-10 flex items-center justify-center border-b border-slate-200 bg-white px-6 py-3.5">
-        <div class="flex w-full max-w-5xl items-center justify-center gap-6">
+        <div class="flex w-full max-w-5xl flex-wrap items-center justify-center gap-x-6 gap-y-2">
             <a class="link" href="https://bilguuntegshbayar.com">
                 Portfolio
             </a>
@@ -18,6 +18,12 @@
                 Codebase
             </a>
             {% if user.is_authenticated %}
+                <a class="text-sm font-medium text-slate-500 no-underline transition-colors hover:text-slate-900" href="{% url 'portfolio:dashboard' %}">
+                    Investments
+                </a>
+                <a class="text-sm font-medium text-slate-500 no-underline transition-colors hover:text-slate-900" href="{% url 'social:friends' %}">
+                    Friends
+                </a>
                 <a class="text-sm font-medium text-slate-500 no-underline transition-colors hover:text-slate-900" href="{% url 'bankroll:dashboard' %}">
                     Dashboard
                 </a>
@@ -35,7 +41,7 @@
         </div>
     </nav>
 
-    <main class="mx-auto max-w-5xl px-6 py-10 pb-16">
+    <main class="mx-auto max-w-5xl px-6 pb-16">
         {% if messages %}
             <ul class="mb-6 list-none space-y-2 p-0">
                 {% for message in messages %}
