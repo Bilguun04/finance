@@ -5,6 +5,8 @@ finnhub-python
 
 # Core
 Django>=6.0,<6.1
+django-environ
+django-htmx
 
 # Testing & Deployment
 gunicorn>=22.0,<23.0
