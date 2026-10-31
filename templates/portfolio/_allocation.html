@@ -1,0 +1,16 @@
+{% comment %}Allocation bar and legend. Expects `items` (each with .symbol and .weight in percent) and `cash_pct`.{% endcomment %}
+<div>
+    {# Decorative; the legend below carries the same numbers as text. #}
+    <div class="flex h-2.5 overflow-hidden rounded-full bg-slate-100" aria-hidden="true">
+        {% for item in items %}
+            <div class="animate-grow-x origin-left {% cycle 'bg-indigo-500' 'bg-cyan-500' 'bg-amber-400' 'bg-emerald-500' 'bg-rose-400' 'bg-violet-500' %}" style="width: {{ item.weight|stringformat:'.3f' }}%" title="{{ item.symbol }} {{ item.weight|floatformat:1 }}%"></div>
+        {% endfor %}
+        <div class="bg-slate-300" style="width: {{ cash_pct|stringformat:'.3f' }}%" title="Cash {{ cash_pct|floatformat:1 }}%"></div>
+    </div>
+    <ul class="mt-3 flex list-none flex-wrap gap-x-4 gap-y-1 p-0 text-xs text-slate-500">
+        {% for item in items %}
+            <li class="flex items-center gap-1.5"><span class="size-2 rounded-full {% cycle 'bg-indigo-500' 'bg-cyan-500' 'bg-amber-400' 'bg-emerald-500' 'bg-rose-400' 'bg-violet-500' %}"></span><span class="font-semibold text-slate-700">{{ item.symbol }}</span> {{ item.weight|floatformat:1 }}%</li>
+        {% endfor %}
+        <li class="flex items-center gap-1.5"><span class="size-2 rounded-full bg-slate-300"></span><span class="font-semibold text-slate-700">Cash</span> {{ cash_pct|floatformat:1 }}%</li>
+    </ul>
+</div>

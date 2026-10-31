@@ -1,0 +1,1 @@
+{% if value < 0 %}&minus;${{ value|cut:"-"|floatformat:"2g" }}{% else %}+${{ value|floatformat:"2g" }}{% endif %}

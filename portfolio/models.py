@@ -35,6 +35,22 @@ class Portfolio(models.Model):
     def calculate_net_liquidity(self):
         return self.cash + sum((holding.market_value for holding in self.holdings.all()), Decimal("0"))
 
+    def allocation(self):
+        """Each holding's share of the portfolio in percent, largest first, plus the cash share.
+
+        Percentages only, so it's safe to show to friends without revealing dollar amounts.
+        """
+        holdings = list(self.holdings.order_by("-market_value", "symbol"))
+        total = self.cash + sum((holding.market_value for holding in holdings), Decimal("0"))
+        if not total:
+            return {"holdings": [], "cash_pct": Decimal("0")}
+        return {
+            "holdings": [
+                {"symbol": holding.symbol, "weight": holding.market_value / total * 100} for holding in holdings
+            ],
+            "cash_pct": self.cash / total * 100,
+        }
+
     def update_net_liquidity(self):
         self.net_liquidity = self.calculate_net_liquidity()
         self.save(update_fields=["net_liquidity"])

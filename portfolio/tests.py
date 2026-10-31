@@ -4,6 +4,7 @@ from unittest.mock import patch
 
 from django.core.exceptions import ValidationError
 from django.db import IntegrityError
+from django.urls import reverse
 
 from finance.testing import FinanceTestCase
 from .models import Holding, Portfolio, Transaction
@@ -444,3 +445,150 @@ class TransactionModelTests(FinanceTestCase):
         Transaction.objects.create(portfolio=self.portfolio, kind=Transaction.Kind.DEPOSIT, price=Decimal("100"))
         self.portfolio.delete()
         self.assertFalse(Transaction.objects.exists())
+
+
+class PortfolioViewTests(FinanceTestCase):
+    HTMX = {"HTTP_HX_REQUEST": "true"}
+
+    def setUp(self):
+        super().setUp()
+        self.client.force_login(self.user)
+        self.portfolio = Portfolio.objects.create(user=self.user, name="Main")
+        self.portfolio.add_cash(Decimal("10000"))
+        self.other_user = self.create_user("other@example.com")
+        self.other_portfolio = Portfolio.objects.create(user=self.other_user, name="Theirs")
+
+    def url(self, name, portfolio=None):
+        return reverse(f"portfolio:{name}", args=[(portfolio or self.portfolio).pk])
+
+    def test_pages_require_login(self):
+        self.client.logout()
+        for url in [reverse("portfolio:dashboard"), self.url("detail"), self.url("settings")]:
+            response = self.client.get(url)
+            self.assertEqual(response.status_code, 302)
+            self.assertIn(reverse("account:login"), response.url)
+
+    def test_dashboard_lists_only_own_portfolios(self):
+        response = self.client.get(reverse("portfolio:dashboard"))
+        self.assertContains(response, "Main")
+        self.assertNotContains(response, "Theirs")
+
+    def test_create_portfolio(self):
+        response = self.client.post(reverse("portfolio:dashboard"), {"name": "Retirement", "currency": "cad"})
+        created = Portfolio.objects.get(name="Retirement")
+        self.assertRedirects(response, self.url("detail", created))
+        self.assertEqual(created.user, self.user)
+        self.assertEqual(created.currency, "CAD")
+        self.assertFalse(created.is_public)
+
+    def test_detail_shows_holdings(self):
+        self.portfolio.buy("AAPL", Decimal("10"), Decimal("150"))
+        response = self.client.get(self.url("detail"))
+        self.assertContains(response, "AAPL")
+        self.assertContains(response, "$8,500.00")
+
+    def test_other_users_portfolio_is_not_found(self):
+        self.assertEqual(self.client.get(self.url("detail", self.other_portfolio)).status_code, 404)
+        self.assertEqual(self.client.get(self.url("settings", self.other_portfolio)).status_code, 404)
+        response = self.client.post(self.url("cash", self.other_portfolio), {"action": "DEPOSIT", "amount": "5"})
+        self.assertEqual(response.status_code, 404)
+        self.other_portfolio.refresh_from_db()
+        self.assertEqual(self.other_portfolio.cash, Decimal("0"))
+
+    def test_actions_reject_get(self):
+        for name in ["trade", "cash", "refresh", "delete"]:
+            self.assertEqual(self.client.get(self.url(name)).status_code, 405)
+
+    def test_buy_via_htmx_returns_body_partial(self):
+        response = self.client.post(
+            self.url("trade"),
+            {"side": "BUY", "symbol": "aapl", "quantity": "10", "price": "150", "fee": "", "use_cash": "on"},
+            **self.HTMX,
+        )
+        self.assertTemplateUsed(response, "portfolio/_portfolio_body.html")
+        self.assertTemplateNotUsed(response, "portfolio/detail.html")
+        self.assertContains(response, "Bought 10 AAPL at $150.00.")
+        self.portfolio.refresh_from_db()
+        self.assertEqual(self.portfolio.cash, Decimal("8500.00"))
+
+    def test_buy_without_pay_from_cash_keeps_cash(self):
+        self.client.post(self.url("trade"), {"side": "BUY", "symbol": "AAPL", "quantity": "10", "price": "150"}, **self.HTMX)
+        self.portfolio.refresh_from_db()
+        self.assertEqual(self.portfolio.cash, Decimal("10000.00"))
+        self.assertEqual(self.portfolio.holdings.get().quantity, Decimal("10"))
+
+    def test_buy_with_insufficient_cash_shows_error(self):
+        response = self.client.post(
+            self.url("trade"),
+            {"side": "BUY", "symbol": "AAPL", "quantity": "1000", "price": "150", "use_cash": "on"},
+            **self.HTMX,
+        )
+        self.assertContains(response, "Insufficient cash in portfolio.")
+        self.assertFalse(self.portfolio.holdings.exists())
+
+    def test_invalid_trade_form_shows_field_errors(self):
+        response = self.client.post(
+            self.url("trade"), {"side": "BUY", "symbol": "AA PL", "quantity": "-1", "price": "150"}, **self.HTMX,
+        )
+        self.assertContains(response, "Use letters, numbers, dots or dashes")
+        self.assertContains(response, "greater than or equal to")
+        self.assertFalse(self.portfolio.holdings.exists())
+
+    def test_sell(self):
+        self.portfolio.buy("AAPL", Decimal("10"), Decimal("150"))
+        response = self.client.post(
+            self.url("trade"), {"side": "SELL", "symbol": "AAPL", "quantity": "4", "price": "200"}, **self.HTMX,
+        )
+        self.assertContains(response, "Sold 4 AAPL at $200.00.")
+        self.assertEqual(self.portfolio.holdings.get().quantity, Decimal("6"))
+
+    def test_sell_unknown_symbol_shows_error(self):
+        response = self.client.post(
+            self.url("trade"), {"side": "SELL", "symbol": "MSFT", "quantity": "1", "price": "200"}, **self.HTMX,
+        )
+        self.assertContains(response, "No MSFT holding to sell.")
+
+    def test_deposit_without_htmx_redirects_with_message(self):
+        response = self.client.post(self.url("cash"), {"action": "DEPOSIT", "amount": "250.50"}, follow=True)
+        self.assertRedirects(response, self.url("detail"))
+        self.assertContains(response, "Deposited $250.50.")
+        self.portfolio.refresh_from_db()
+        self.assertEqual(self.portfolio.cash, Decimal("10250.50"))
+
+    def test_withdraw_overdraft_shows_error(self):
+        response = self.client.post(self.url("cash"), {"action": "WITHDRAW", "amount": "20000"}, **self.HTMX)
+        self.assertContains(response, "Insufficient cash in portfolio.")
+        self.portfolio.refresh_from_db()
+        self.assertEqual(self.portfolio.cash, Decimal("10000.00"))
+
+    def test_failed_trade_without_htmx_renders_full_page_with_errors(self):
+        response = self.client.post(self.url("trade"), {"side": "SELL", "symbol": "MSFT", "quantity": "1", "price": "1"})
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "portfolio/detail.html")
+        self.assertContains(response, "No MSFT holding to sell.")
+
+    @patch("portfolio.models.get_quotes")
+    def test_refresh_prices(self, mock_get_quotes):
+        self.portfolio.buy("AAPL", Decimal("10"), Decimal("150"))
+        mock_get_quotes.return_value = make_quotes(AAPL=200.0)
+
+        response = self.client.post(self.url("refresh"), **self.HTMX)
+
+        self.assertContains(response, "Prices refreshed.")
+        self.assertEqual(self.portfolio.holdings.get().market_value, Decimal("2000.00"))
+
+    def test_settings_update(self):
+        response = self.client.post(self.url("settings"), {"name": "Long term", "is_public": "on"})
+        self.assertRedirects(response, self.url("detail"))
+        self.portfolio.refresh_from_db()
+        self.assertEqual(self.portfolio.name, "Long term")
+        self.assertTrue(self.portfolio.is_public)
+
+    def test_delete(self):
+        response = self.client.post(self.url("delete"))
+        self.assertRedirects(response, reverse("portfolio:dashboard"))
+        self.assertFalse(Portfolio.objects.filter(pk=self.portfolio.pk).exists())
+
+    def test_cannot_delete_other_users_portfolio(self):
+        self.assertEqual(self.client.post(self.url("delete", self.other_portfolio)).status_code, 404)
+        self.assertTrue(Portfolio.objects.filter(pk=self.other_portfolio.pk).exists())
