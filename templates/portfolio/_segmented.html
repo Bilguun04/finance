@@ -1,0 +1,9 @@
+{% comment %}Radio choices drawn as a two-way toggle. Expects `field` (a RadioSelect bound field).{% endcomment %}
+<div class="grid grid-cols-2 gap-1 rounded-lg bg-slate-100 p-1" role="radiogroup" aria-label="{{ field.label }}">
+    {% for radio in field %}
+        <label class="cursor-pointer">
+            <input type="radio" name="{{ radio.data.name }}" value="{{ radio.data.value }}" class="peer sr-only"{% if radio.data.selected %} checked{% endif %}>
+            <span class="block rounded-md py-1.5 text-center text-sm font-semibold text-slate-500 transition peer-checked:bg-white peer-checked:shadow-sm peer-focus-visible:ring-2 peer-focus-visible:ring-indigo-300 {% if radio.data.value == 'SELL' or radio.data.value == 'WITHDRAW' %}peer-checked:text-red-600{% else %}peer-checked:text-emerald-700{% endif %}">{{ radio.choice_label }}</span>
+        </label>
+    {% endfor %}
+</div>

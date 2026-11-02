@@ -1,0 +1,31 @@
+{% if movers %}
+    <div class="space-y-3">
+        {% for stock in movers %}
+            <div class="animate-fade-up -mx-2 flex items-center gap-3 rounded-lg px-2 py-1 transition-colors hover:bg-slate-50"
+                 style="animation-delay: {% widthratio forloop.counter0 1 90 %}ms"
+                 data-symbol="{{ stock.symbol }}" data-price="{{ stock.quote.price }}">
+                <div class="flex h-9 w-12 shrink-0 items-center justify-center rounded-lg text-xs font-bold {% if up %}bg-emerald-50 text-emerald-700{% else %}bg-red-50 text-red-700{% endif %}">
+                    {{ stock.symbol }}
+                </div>
+
+                <div class="min-w-0 flex-1">
+                    <div class="mb-1.5 flex items-baseline justify-between gap-2">
+                        <p class="truncate text-sm font-bold text-slate-800">{{ stock.name }}</p>
+                        <p class="text-sm font-bold text-slate-800 tabular-nums">${{ stock.quote.price|floatformat:"2g" }}</p>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <div class="h-1.5 flex-1 overflow-hidden rounded-full bg-slate-100">
+                            <div class="animate-grow-x h-full origin-left rounded-full {% if up %}bg-emerald-500{% else %}bg-red-500{% endif %}"
+                                 style="width: {{ stock.bar_pct|floatformat:0 }}%; animation-delay: {% widthratio forloop.counter0 1 90 %}ms"></div>
+                        </div>
+                        <p class="w-14 text-right text-xs font-semibold tabular-nums {% if up %}text-emerald-600{% else %}text-red-600{% endif %}">
+                            {% if up %}+{% endif %}{{ stock.quote.change_pct|floatformat:2 }}%
+                        </p>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <p class="text-xs text-slate-400">None of the major stocks are {% if up %}up{% else %}down{% endif %} {{ change_label }}.</p>
+{% endif %}
