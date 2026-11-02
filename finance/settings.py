@@ -150,7 +150,11 @@ STORAGES = {
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+
+# Market data
+FINNHUB_API_KEY = env('FINNHUB_API_KEY', default='')
+
 # Auth routes
 LOGIN_URL = 'account:login'
-LOGIN_REDIRECT_URL = 'bankroll:dashboard'
+LOGIN_REDIRECT_URL = 'portfolio:dashboard'
 LOGOUT_REDIRECT_URL = 'core:index'

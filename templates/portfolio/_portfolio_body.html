@@ -1,0 +1,185 @@
+<div id="portfolio-body" class="space-y-6">
+    {% if notice %}
+        <output class="animate-fade-up block rounded-md border border-slate-200 border-l-4 border-l-emerald-600 bg-emerald-50 px-4 py-3 text-sm text-slate-700 shadow-sm">{{ notice }}</output>
+    {% endif %}
+
+    {# Summary #}
+    <section class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <article class="rounded-xl border border-indigo-100 border-t-4 border-t-indigo-500 bg-white p-5 shadow-sm">
+            <p class="text-xs font-semibold uppercase tracking-wider text-slate-500">Net liquidity</p>
+            <p class="mt-3 text-3xl font-semibold tabular-nums text-slate-900">${{ net_liquidity|floatformat:"2g" }}</p>
+            <p class="mt-2 text-sm text-slate-500">Cash plus holdings</p>
+        </article>
+        <article class="rounded-xl border border-slate-200 border-t-4 border-t-slate-400 bg-white p-5 shadow-sm">
+            <p class="text-xs font-semibold uppercase tracking-wider text-slate-500">Cash</p>
+            <p class="mt-3 text-3xl font-semibold tabular-nums text-slate-900">${{ portfolio.cash|floatformat:"2g" }}</p>
+            <p class="mt-2 text-sm text-slate-500">{{ cash_pct|floatformat:1 }}% of portfolio</p>
+        </article>
+        <article class="rounded-xl border border-cyan-100 border-t-4 border-t-cyan-500 bg-white p-5 shadow-sm">
+            <p class="text-xs font-semibold uppercase tracking-wider text-slate-500">Unrealized gain</p>
+            <p class="mt-3 text-3xl font-semibold tabular-nums {% if unrealized_gain >= 0 %}text-emerald-600{% else %}text-red-600{% endif %}">{% include "portfolio/_signed_money.html" with value=unrealized_gain %}</p>
+            <p class="mt-2 text-sm text-slate-500">{{ unrealized_pct|floatformat:2 }}% on ${{ cost_basis|floatformat:"2g" }} invested</p>
+        </article>
+        <article class="rounded-xl border border-amber-100 border-t-4 border-t-amber-400 bg-white p-5 shadow-sm">
+            <p class="text-xs font-semibold uppercase tracking-wider text-slate-500">Realized gain</p>
+            <p class="mt-3 text-3xl font-semibold tabular-nums {% if realized_gain >= 0 %}text-emerald-600{% else %}text-red-600{% endif %}">{% include "portfolio/_signed_money.html" with value=realized_gain %}</p>
+            <p class="mt-2 text-sm text-slate-500">Locked in from sales</p>
+        </article>
+    </section>
+
+    <div class="grid gap-6 lg:grid-cols-3 lg:items-start">
+        {# Holdings #}
+        <section class="min-w-0 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm lg:col-span-2">
+            <div class="border-b border-slate-200 px-5 py-5 sm:px-6">
+                <p class="text-xs font-semibold uppercase tracking-wider text-slate-500">Positions</p>
+                <h2 class="mt-1 text-2xl font-semibold tracking-tight text-slate-900">Holdings</h2>
+
+                {% if net_liquidity %}
+                <div class="mt-4">
+                    {% include "portfolio/_allocation.html" with items=holdings %}
+                </div>
+                {% endif %}
+            </div>
+
+            {% if holdings %}
+            <div class="overflow-x-auto">
+                <table class="w-full min-w-160 text-left">
+                    <thead class="border-b border-slate-100 bg-slate-50 text-xs uppercase tracking-wider text-slate-500">
+                        <tr>
+                            <th class="px-6 py-3 font-semibold">Symbol</th>
+                            <th class="px-4 py-3 text-right font-semibold">Shares</th>
+                            <th class="px-4 py-3 text-right font-semibold">Avg cost</th>
+                            <th class="px-4 py-3 text-right font-semibold">Market value</th>
+                            <th class="px-6 py-3 text-right font-semibold">Unrealized</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100">
+                        {% for holding in holdings %}
+                        <tr class="transition-colors hover:bg-slate-50">
+                            <td class="px-6 py-4">
+                                <p class="font-semibold text-slate-900">{{ holding.symbol }}</p>
+                                <p class="mt-0.5 text-xs text-slate-500">{{ holding.weight|floatformat:1 }}% of portfolio</p>
+                            </td>
+                            <td class="px-4 py-4 text-right text-sm tabular-nums text-slate-600">{{ holding.display_quantity }}</td>
+                            <td class="px-4 py-4 text-right text-sm tabular-nums text-slate-600">${{ holding.avg_cost|floatformat:"2g" }}</td>
+                            <td class="px-4 py-4 text-right tabular-nums">
+                                <p class="text-sm font-semibold text-slate-900">${{ holding.market_value|floatformat:"2g" }}</p>
+                                <p class="mt-0.5 text-xs text-slate-500">cost ${{ holding.cost_basis|floatformat:"2g" }}</p>
+                            </td>
+                            <td class="px-6 py-4 text-right">
+                                <span class="inline-flex rounded-full px-2.5 py-1 text-sm font-semibold tabular-nums {% if holding.unrealized_gain >= 0 %}bg-emerald-100 text-emerald-700{% else %}bg-red-100 text-red-700{% endif %}">{% include "portfolio/_signed_money.html" with value=holding.unrealized_gain %}</span>
+                                <p class="mt-1 text-xs tabular-nums {% if holding.gain_pct >= 0 %}text-emerald-600{% else %}text-red-600{% endif %}">{{ holding.gain_pct|floatformat:2 }}%</p>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="px-6 py-16 text-center">
+                <p class="text-lg font-semibold text-slate-900">No holdings yet</p>
+                <p class="mt-2 text-sm text-slate-500">{% if portfolio.cash %}Use the trade panel to buy your first position.{% else %}Deposit cash, then buy your first position.{% endif %}</p>
+            </div>
+            {% endif %}
+        </section>
+
+        {# Trade + cash #}
+        <div class="space-y-6">
+            <section class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+                <p class="text-xs font-semibold uppercase tracking-wider text-slate-500">Order</p>
+                <h2 class="mt-1 text-xl font-semibold tracking-tight text-slate-900">Trade</h2>
+                <form method="post" action="{% url 'portfolio:trade' portfolio.pk %}" class="group mt-4 space-y-4"
+                      hx-post="{% url 'portfolio:trade' portfolio.pk %}" hx-target="#portfolio-body" hx-swap="outerHTML" hx-disabled-elt="find button[type=submit]">
+                    {% csrf_token %}
+                    {% include "portfolio/_segmented.html" with field=trade_form.side %}
+                    {% if trade_form.non_field_errors %}
+                        <div class="rounded-md bg-red-50 px-3 py-2 text-sm text-red-700" role="alert">{% for error in trade_form.non_field_errors %}{{ error }}{% endfor %}</div>
+                    {% endif %}
+                    {% include "portfolio/_field.html" with field=trade_form.symbol %}
+                    <div class="grid grid-cols-2 gap-3">
+                        {% include "portfolio/_field.html" with field=trade_form.quantity %}
+                        {% include "portfolio/_field.html" with field=trade_form.price %}
+                    </div>
+                    {% include "portfolio/_field.html" with field=trade_form.fee %}
+                    <label class="flex items-start gap-2.5 rounded-lg bg-slate-50 p-3 text-sm group-has-[input[value=SELL]:checked]:hidden">
+                        <input type="checkbox" name="{{ trade_form.use_cash.html_name }}" id="{{ trade_form.use_cash.id_for_label }}" class="mt-0.5 size-4 shrink-0 accent-indigo-600"{% if trade_form.use_cash.value %} checked{% endif %}>
+                        <span><span class="font-semibold text-slate-700">{{ trade_form.use_cash.label }}</span><span class="mt-0.5 block text-xs text-slate-500">{{ trade_form.use_cash.help_text }}</span></span>
+                    </label>
+                    <button type="submit" class="w-full rounded-lg bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-indigo-700 disabled:opacity-60">Place order</button>
+                </form>
+            </section>
+
+            <section class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+                <div class="flex items-baseline justify-between">
+                    <div>
+                        <p class="text-xs font-semibold uppercase tracking-wider text-slate-500">Funding</p>
+                        <h2 class="mt-1 text-xl font-semibold tracking-tight text-slate-900">Cash</h2>
+                    </div>
+                    <p class="text-sm tabular-nums text-slate-500">${{ portfolio.cash|floatformat:"2g" }} available</p>
+                </div>
+                <form method="post" action="{% url 'portfolio:cash' portfolio.pk %}" class="mt-4 space-y-4"
+                      hx-post="{% url 'portfolio:cash' portfolio.pk %}" hx-target="#portfolio-body" hx-swap="outerHTML" hx-disabled-elt="find button[type=submit]">
+                    {% csrf_token %}
+                    {% include "portfolio/_segmented.html" with field=cash_form.action %}
+                    {% if cash_form.non_field_errors %}
+                        <div class="rounded-md bg-red-50 px-3 py-2 text-sm text-red-700" role="alert">{% for error in cash_form.non_field_errors %}{{ error }}{% endfor %}</div>
+                    {% endif %}
+                    {% include "portfolio/_field.html" with field=cash_form.amount %}
+                    <button type="submit" class="w-full rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm font-semibold text-slate-900 transition hover:bg-slate-50 disabled:opacity-60">Confirm</button>
+                </form>
+            </section>
+        </div>
+    </div>
+
+    {# Activity #}
+    <section class="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+        <div class="border-b border-slate-200 px-5 py-5 sm:px-6">
+            <p class="text-xs font-semibold uppercase tracking-wider text-slate-500">History</p>
+            <h2 class="mt-1 text-2xl font-semibold tracking-tight text-slate-900">Recent activity</h2>
+        </div>
+        {% if transactions %}
+        <div class="overflow-x-auto">
+            <table class="w-full min-w-160 text-left">
+                <thead class="border-b border-slate-100 bg-slate-50 text-xs uppercase tracking-wider text-slate-500">
+                    <tr>
+                        <th class="px-6 py-3 font-semibold">Date</th>
+                        <th class="px-4 py-3 font-semibold">Type</th>
+                        <th class="px-4 py-3 font-semibold">Details</th>
+                        <th class="px-4 py-3 text-right font-semibold">Amount</th>
+                        <th class="px-6 py-3 text-right font-semibold">Realized</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100">
+                    {% for txn in transactions %}
+                    <tr class="transition-colors hover:bg-slate-50">
+                        <td class="px-6 py-3.5 text-sm text-slate-600">{{ txn.executed_at|date:"M j, Y" }}<span class="block text-xs text-slate-400">{{ txn.executed_at|time:"g:i A" }}</span></td>
+                        <td class="px-4 py-3.5">
+                            <span class="inline-flex rounded-full px-2.5 py-0.5 text-xs font-semibold
+                                {% if txn.kind == 'BUY' %}bg-emerald-100 text-emerald-700{% elif txn.kind == 'SELL' %}bg-red-100 text-red-700{% elif txn.kind == 'DEPOSIT' %}bg-indigo-100 text-indigo-700{% elif txn.kind == 'WITHDRAW' %}bg-amber-100 text-amber-700{% else %}bg-slate-100 text-slate-600{% endif %}">{{ txn.get_kind_display|capfirst }}</span>
+                        </td>
+                        <td class="px-4 py-3.5 text-sm text-slate-600">
+                            {% if txn.symbol %}
+                                <span class="font-semibold text-slate-900">{{ txn.symbol }}</span> &middot; {{ txn.display_quantity }} @ ${{ txn.price|floatformat:"2g" }}
+                                {% if txn.fee %}<span class="block text-xs text-slate-400">fee ${{ txn.fee|floatformat:"2g" }}</span>{% endif %}
+                            {% else %}
+                                Cash
+                            {% endif %}
+                        </td>
+                        <td class="px-4 py-3.5 text-right text-sm font-semibold tabular-nums text-slate-900">${{ txn.amount|floatformat:"2g" }}</td>
+                        <td class="px-6 py-3.5 text-right text-sm font-semibold tabular-nums">
+                            {% if txn.realized_gain is not None %}
+                                <span class="{% if txn.realized_gain >= 0 %}text-emerald-600{% else %}text-red-600{% endif %}">{% include "portfolio/_signed_money.html" with value=txn.realized_gain %}</span>
+                            {% else %}
+                                <span class="text-slate-300">&mdash;</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="px-6 py-12 text-center text-sm text-slate-500">Deposits, trades and withdrawals will show up here.</div>
+        {% endif %}
+    </section>
+</div>

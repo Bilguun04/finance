@@ -34,6 +34,59 @@
 
 @theme {
     --font-sans: "IBM Plex Sans Condensed", sans-serif;
+
+    --animate-fade-up: fade-up 0.5s ease-out both;
+    --animate-grow-x: grow-x 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
+
+    @keyframes fade-up {
+        from { opacity: 0; transform: translateY(8px); }
+        to { opacity: 1; transform: none; }
+    }
+
+    @keyframes grow-x {
+        from { transform: scaleX(0); }
+        to { transform: scaleX(1); }
+    }
+}
+
+@utility skeleton {
+    background: linear-gradient(90deg, var(--color-slate-100) 25%, var(--color-slate-50) 50%, var(--color-slate-100) 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.4s linear infinite;
+}
+
+@keyframes shimmer {
+    from { background-position: 200% 0; }
+    to { background-position: -200% 0; }
+}
+
+/* Price change highlight, added by the landing page script when a refreshed price differs. */
+@keyframes flash-up {
+    from { background-color: var(--color-emerald-100); }
+}
+
+@keyframes flash-down {
+    from { background-color: var(--color-red-100); }
+}
+
+.flash-up { animation: flash-up 1.5s ease-out; }
+.flash-down { animation: flash-down 1.5s ease-out; }
+
+/* Entrance animations only play on the first load, not on every auto-refresh. */
+[data-loaded] .animate-fade-up,
+[data-loaded] .animate-grow-x {
+    animation: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .animate-fade-up,
+    .animate-grow-x,
+    .animate-ping,
+    .skeleton,
+    .flash-up,
+    .flash-down {
+        animation: none;
+    }
 }
 
 @utility link {
