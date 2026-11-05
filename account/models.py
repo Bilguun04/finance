@@ -1,1 +1,0 @@
-# Account model goes here. Although since we are using the default User model, we don't need to define any additional fields or methods. However, if you want to extend the User model in the future, you can do so by creating a custom User model that inherits from AbstractUser or AbstractBaseUser.
