@@ -1,54 +1,38 @@
-# sv
+# Finance Tracker (SvelteKit)
 
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
+SvelteKit port of the Django app in the repository root: portfolios and trading, a bankroll session log,
+friends with shared portfolio allocations, and a live market landing page.
 
-## Creating a project
+Stack: SvelteKit 3 + Svelte 5, Drizzle ORM on PostgreSQL, better-auth (username + password),
+Tailwind CSS 4, deployed to Cloudflare Workers.
 
-If you're seeing this, you've probably already done this step. Congrats!
-
-```sh
-# create a new project
-npx sv create my-app
-```
-
-To recreate this project with the same configuration:
+## Setup
 
 ```sh
-# recreate this project
-npx sv@1.3.0 create --template minimal --types ts --add prettier eslint vitest="usages:unit,component" tailwindcss="plugins:typography,forms" sveltekit-adapter="adapter:cloudflare+cfTarget:workers" drizzle="database:postgresql+postgresql:postgres.js+docker:yes" better-auth="demo:password" --install npm .
-```
-
-## Adding features
-
-Add features to your project with `sv add`:
-
-```sh
-npx sv add
-```
-
-For example, to add Tailwind CSS:
-
-```sh
-npx sv add tailwindcss
-```
-
-## Developing
-
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
-
-```sh
+npm install
+cp .env.example .env        # then fill in BETTER_AUTH_SECRET and, optionally, FINNHUB_API_KEY
+npm run db:start            # Postgres in Docker (compose.yaml)
+npm run db:migrate          # apply drizzle/ migrations
 npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
 ```
 
-## Building
+After changing `src/lib/server/db/schema.ts`, run `npm run db:generate` and commit the new migration.
 
-To create a production version of your app:
+## Where things live
 
-```sh
-npm run build
-```
+| Django app  | SvelteKit                                                                       |
+| ----------- | ------------------------------------------------------------------------------- |
+| `core`      | `src/routes/+page.*`, `src/routes/api/market/*`, `src/lib/server/market.ts`     |
+| `account`   | `src/routes/account/*`, `src/lib/server/auth.ts`, `src/lib/server/passwords.ts` |
+| `portfolio` | `src/routes/portfolio/*`, `src/lib/server/portfolio*.ts`                        |
+| `bankroll`  | `src/routes/bankroll/*`, `src/lib/server/bankroll.ts`                           |
+| `social`    | `src/routes/social/*`, `src/lib/server/social.ts`                               |
+| models      | `src/lib/server/db/schema.ts` (+ `auth.schema.ts` for better-auth's tables)     |
 
-You can preview the production build with `npm run preview`.
+## Notes
+
+- Password reset emails are printed to the server console (like Django's console email backend).
+  Replace `sendResetPassword` in `src/lib/server/auth.ts` with a real email provider for production.
+- On Cloudflare Workers each request opens its own database connection (`src/lib/server/db/index.ts`).
+  For production, put the database behind Cloudflare Hyperdrive to keep connections pooled.
+- Tests: `npm test` runs unit tests for the money maths, market hours, form validation and formatting.

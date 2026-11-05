@@ -8,5 +8,10 @@ export const variables = defineEnvVars({
 	BETTER_AUTH_SECRET: {
 		description:
 			'Secret used to sign tokens. For production use 32 characters generated with high entropy. See [Better Auth installation](https://www.better-auth.com/docs/installation).'
+	},
+	FINNHUB_API_KEY: {
+		description:
+			'Finnhub API key for market quotes. Optional: without it, quotes show as unavailable.',
+		schema: (value) => value ?? ''
 	}
 });

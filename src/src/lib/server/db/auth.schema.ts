@@ -7,6 +7,9 @@ export const user = pgTable('user', {
 	email: text('email').notNull().unique(),
 	emailVerified: boolean('email_verified').default(false).notNull(),
 	image: text('image'),
+	// Added by better-auth's username plugin. `username` is stored lowercased; `displayUsername` keeps the original casing.
+	username: text('username').unique(),
+	displayUsername: text('display_username'),
 	createdAt: timestamp('created_at').defaultNow().notNull(),
 	updatedAt: timestamp('updated_at')
 		.defaultNow()

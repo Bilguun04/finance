@@ -70,5 +70,8 @@
 		"@esbuild-kit/core-utils": {
 			"esbuild": "^0.25.0"
 		}
+	},
+	"dependencies": {
+		"decimal.js": "^10.6.0"
 	}
 }

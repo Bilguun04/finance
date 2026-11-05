@@ -15,6 +15,20 @@
       "when": 1793854114397,
       "tag": "0001_fantastic_thunderbird",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1793855749808,
+      "tag": "0002_drop_demo_add_username",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1793855750685,
+      "tag": "0003_finance_tables",
+      "breakpoints": true
     }
   ]
 }
