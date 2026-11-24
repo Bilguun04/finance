@@ -7,12 +7,16 @@ from django.db import IntegrityError
 from django.urls import reverse
 
 from finance.testing import FinanceTestCase
+
 from .models import Holding, Portfolio, Transaction
 
 
 def make_quotes(**prices):
     """Shape a get_quotes() result the way portfolio.market returns it (float prices)."""
-    return {symbol: {"price": price} if price is not None else None for symbol, price in prices.items()}
+    return {
+        symbol: {"price": price} if price is not None else None
+        for symbol, price in prices.items()
+    }
 
 
 class PortfolioModelTests(FinanceTestCase):
@@ -42,7 +46,9 @@ class PortfolioModelTests(FinanceTestCase):
 
     def test_portfolio_str(self):
         portfolio = Portfolio.objects.create(user=self.user, name="Main")
-        self.assertEqual(str(portfolio), f"{portfolio.name} ({self.user}, {portfolio.currency})")
+        self.assertEqual(
+            str(portfolio), f"{portfolio.name} ({self.user}, {portfolio.currency})"
+        )
 
     def test_modify_portfolio(self):
         portfolio = Portfolio.objects.create(user=self.user, name="Main")
@@ -53,8 +59,18 @@ class PortfolioModelTests(FinanceTestCase):
 
     def test_holdings_count(self):
         portfolio = Portfolio.objects.create(user=self.user)
-        Holding.objects.create(portfolio=portfolio, symbol="AAPL", quantity=Decimal("1"), avg_cost=Decimal("1"))
-        Holding.objects.create(portfolio=portfolio, symbol="MSFT", quantity=Decimal("1"), avg_cost=Decimal("1"))
+        Holding.objects.create(
+            portfolio=portfolio,
+            symbol="AAPL",
+            quantity=Decimal("1"),
+            avg_cost=Decimal("1"),
+        )
+        Holding.objects.create(
+            portfolio=portfolio,
+            symbol="MSFT",
+            quantity=Decimal("1"),
+            avg_cost=Decimal("1"),
+        )
         self.assertEqual(portfolio.holdings_count, 2)
 
 
@@ -63,7 +79,9 @@ class HoldingModelTests(FinanceTestCase):
         super().setUp()
         self.portfolio = Portfolio.objects.create(user=self.user)
 
-    def create_holding(self, symbol="AAPL", quantity="10", avg_cost="150", market_value="1500"):
+    def create_holding(
+        self, symbol="AAPL", quantity="10", avg_cost="150", market_value="1500"
+    ):
         return Holding.objects.create(
             portfolio=self.portfolio,
             symbol=symbol,
@@ -89,8 +107,12 @@ class HoldingModelTests(FinanceTestCase):
         self.assertEqual(holding.fraction_of_net_worth, Decimal("100.00"))
 
     def test_create_multiple_holdings(self):
-        holding1 = self.create_holding(symbol="AAPL", quantity="10", avg_cost="150", market_value="1500")
-        holding2 = self.create_holding(symbol="GOOGL", quantity="5", avg_cost="2000", market_value="10000")
+        holding1 = self.create_holding(
+            symbol="AAPL", quantity="10", avg_cost="150", market_value="1500"
+        )
+        holding2 = self.create_holding(
+            symbol="GOOGL", quantity="5", avg_cost="2000", market_value="10000"
+        )
 
         for holding in [holding1, holding2]:
             self.assertEqual(holding.portfolio, self.portfolio)
@@ -98,7 +120,9 @@ class HoldingModelTests(FinanceTestCase):
             self.assertIn(holding.quantity, [Decimal("10"), Decimal("5")])
             self.assertIn(holding.avg_cost, [Decimal("150"), Decimal("2000")])
             self.assertIn(holding.cost_basis, [Decimal("1500.00"), Decimal("10000.00")])
-            self.assertIn(holding.market_value, [Decimal("1500.00"), Decimal("10000.00")])
+            self.assertIn(
+                holding.market_value, [Decimal("1500.00"), Decimal("10000.00")]
+            )
 
     def test_save_computes_cost_basis(self):
         holding = self.create_holding(quantity="10", avg_cost="150")
@@ -126,7 +150,9 @@ class HoldingModelTests(FinanceTestCase):
     def test_same_symbol_allowed_in_different_portfolios(self):
         self.create_holding(symbol="AAPL")
         other = Portfolio.objects.create(user=self.user, name="Other")
-        Holding.objects.create(portfolio=other, symbol="AAPL", quantity=Decimal("1"), avg_cost=Decimal("1"))
+        Holding.objects.create(
+            portfolio=other, symbol="AAPL", quantity=Decimal("1"), avg_cost=Decimal("1")
+        )
         self.assertEqual(Holding.objects.filter(symbol="AAPL").count(), 2)
 
     def test_deleting_portfolio_deletes_holdings(self):
@@ -189,7 +215,9 @@ class HoldingModelTests(FinanceTestCase):
         mock_get_quotes.assert_not_called()
 
     @patch("portfolio.models.get_quotes")
-    def test_update_market_value_keeps_old_value_when_quote_unavailable(self, mock_get_quotes):
+    def test_update_market_value_keeps_old_value_when_quote_unavailable(
+        self, mock_get_quotes
+    ):
         # get_quotes() always returns the symbol as a key, with None when the lookup fails.
         mock_get_quotes.return_value = make_quotes(AAPL=None)
         holding = self.create_holding(market_value="1500")
@@ -212,7 +240,9 @@ class HoldingModelTests(FinanceTestCase):
         self.assertEqual(holding.fraction_of_net_worth, Decimal("0"))
 
     def test_unrealized_gain(self):
-        holding = self.create_holding(quantity="10", avg_cost="150", market_value="1800")
+        holding = self.create_holding(
+            quantity="10", avg_cost="150", market_value="1800"
+        )
         self.assertEqual(holding.unrealized_gain, Decimal("300"))
 
 
@@ -270,7 +300,9 @@ class PortfolioTradingTests(FinanceTestCase):
         return self.portfolio.holdings.get(symbol=symbol)
 
     def test_buy_new_holding(self):
-        txn = self.portfolio.buy("aapl", Decimal("10"), Decimal("150"), fee=Decimal("1"))
+        txn = self.portfolio.buy(
+            "aapl", Decimal("10"), Decimal("150"), fee=Decimal("1")
+        )
 
         holding = self.holding()
         self.assertEqual(holding.quantity, Decimal("10"))
@@ -305,11 +337,15 @@ class PortfolioTradingTests(FinanceTestCase):
         self.portfolio.refresh_from_db()
         self.assertEqual(self.portfolio.cash, Decimal("10000.00"))
         self.assertFalse(self.portfolio.holdings.exists())
-        self.assertFalse(self.portfolio.transactions.filter(kind=Transaction.Kind.BUY).exists())
+        self.assertFalse(
+            self.portfolio.transactions.filter(kind=Transaction.Kind.BUY).exists()
+        )
 
     def test_buy_fee_counts_toward_insufficient_cash(self):
         with self.assertRaises(ValueError):
-            self.portfolio.buy("AAPL", Decimal("100"), Decimal("100"), fee=Decimal("0.01"))
+            self.portfolio.buy(
+                "AAPL", Decimal("100"), Decimal("100"), fee=Decimal("0.01")
+            )
 
     def test_buy_without_cash_tracks_external_position(self):
         self.portfolio.buy("AAPL", Decimal("10"), Decimal("150"), use_cash=False)
@@ -328,7 +364,9 @@ class PortfolioTradingTests(FinanceTestCase):
     def test_partial_sell(self):
         self.portfolio.buy("AAPL", Decimal("10"), Decimal("150"))
 
-        txn = self.portfolio.sell("AAPL", Decimal("4"), Decimal("200"), fee=Decimal("2"))
+        txn = self.portfolio.sell(
+            "AAPL", Decimal("4"), Decimal("200"), fee=Decimal("2")
+        )
 
         holding = self.holding()
         self.assertEqual(holding.quantity, Decimal("6"))
@@ -353,7 +391,10 @@ class PortfolioTradingTests(FinanceTestCase):
         self.assertFalse(self.portfolio.holdings.exists())
         self.portfolio.refresh_from_db()
         self.assertEqual(self.portfolio.cash, Decimal("9900.00"))
-        self.assertEqual(self.portfolio.transactions.get(kind=Transaction.Kind.SELL).realized_gain, Decimal("-100.00"))
+        self.assertEqual(
+            self.portfolio.transactions.get(kind=Transaction.Kind.SELL).realized_gain,
+            Decimal("-100.00"),
+        )
 
     def test_sell_more_than_held_changes_nothing(self):
         self.portfolio.buy("AAPL", Decimal("10"), Decimal("150"))
@@ -364,7 +405,9 @@ class PortfolioTradingTests(FinanceTestCase):
         self.assertEqual(self.holding().quantity, Decimal("10"))
         self.portfolio.refresh_from_db()
         self.assertEqual(self.portfolio.cash, Decimal("8500.00"))
-        self.assertFalse(self.portfolio.transactions.filter(kind=Transaction.Kind.SELL).exists())
+        self.assertFalse(
+            self.portfolio.transactions.filter(kind=Transaction.Kind.SELL).exists()
+        )
 
     def test_sell_unknown_symbol(self):
         with self.assertRaises(ValueError):
@@ -415,34 +458,50 @@ class TransactionModelTests(FinanceTestCase):
         self.assertEqual(str(txn), "BUY 10.000000 AAPL @ 150.0000")
 
     def test_cash_transaction_needs_no_symbol_or_quantity(self):
-        txn = Transaction(portfolio=self.portfolio, kind=Transaction.Kind.DEPOSIT, price=Decimal("500"))
+        txn = Transaction(
+            portfolio=self.portfolio,
+            kind=Transaction.Kind.DEPOSIT,
+            price=Decimal("500"),
+        )
         txn.full_clean()
         txn.save()
         self.assertEqual(txn.symbol, "")
         self.assertIsNone(txn.quantity)
 
     def test_executed_at_defaults_to_now(self):
-        txn = Transaction.objects.create(portfolio=self.portfolio, kind=Transaction.Kind.DEPOSIT, price=Decimal("1"))
+        txn = Transaction.objects.create(
+            portfolio=self.portfolio, kind=Transaction.Kind.DEPOSIT, price=Decimal("1")
+        )
         self.assertIsNotNone(txn.executed_at)
 
     def test_invalid_kind_is_rejected(self):
-        txn = Transaction(portfolio=self.portfolio, kind="GIFT", executed_at=self.executed_at)
+        txn = Transaction(
+            portfolio=self.portfolio, kind="GIFT", executed_at=self.executed_at
+        )
         with self.assertRaises(ValidationError):
             txn.full_clean()
 
     def test_newest_first(self):
         older = Transaction.objects.create(
-            portfolio=self.portfolio, kind=Transaction.Kind.DEPOSIT, price=Decimal("1"),
+            portfolio=self.portfolio,
+            kind=Transaction.Kind.DEPOSIT,
+            price=Decimal("1"),
             executed_at=datetime(2026, 1, 1, tzinfo=timezone.utc),
         )
         newer = Transaction.objects.create(
-            portfolio=self.portfolio, kind=Transaction.Kind.DEPOSIT, price=Decimal("1"),
+            portfolio=self.portfolio,
+            kind=Transaction.Kind.DEPOSIT,
+            price=Decimal("1"),
             executed_at=self.executed_at,
         )
         self.assertEqual(list(self.portfolio.transactions.all()), [newer, older])
 
     def test_deleting_portfolio_deletes_transactions(self):
-        Transaction.objects.create(portfolio=self.portfolio, kind=Transaction.Kind.DEPOSIT, price=Decimal("100"))
+        Transaction.objects.create(
+            portfolio=self.portfolio,
+            kind=Transaction.Kind.DEPOSIT,
+            price=Decimal("100"),
+        )
         self.portfolio.delete()
         self.assertFalse(Transaction.objects.exists())
 
@@ -456,14 +515,20 @@ class PortfolioViewTests(FinanceTestCase):
         self.portfolio = Portfolio.objects.create(user=self.user, name="Main")
         self.portfolio.add_cash(Decimal("10000"))
         self.other_user = self.create_user("other@example.com")
-        self.other_portfolio = Portfolio.objects.create(user=self.other_user, name="Theirs")
+        self.other_portfolio = Portfolio.objects.create(
+            user=self.other_user, name="Theirs"
+        )
 
     def url(self, name, portfolio=None):
         return reverse(f"portfolio:{name}", args=[(portfolio or self.portfolio).pk])
 
     def test_pages_require_login(self):
         self.client.logout()
-        for url in [reverse("portfolio:dashboard"), self.url("detail"), self.url("settings")]:
+        for url in [
+            reverse("portfolio:dashboard"),
+            self.url("detail"),
+            self.url("settings"),
+        ]:
             response = self.client.get(url)
             self.assertEqual(response.status_code, 302)
             self.assertIn(reverse("account:login"), response.url)
@@ -474,7 +539,9 @@ class PortfolioViewTests(FinanceTestCase):
         self.assertNotContains(response, "Theirs")
 
     def test_create_portfolio(self):
-        response = self.client.post(reverse("portfolio:dashboard"), {"name": "Retirement", "currency": "cad"})
+        response = self.client.post(
+            reverse("portfolio:dashboard"), {"name": "Retirement", "currency": "cad"}
+        )
         created = Portfolio.objects.get(name="Retirement")
         self.assertRedirects(response, self.url("detail", created))
         self.assertEqual(created.user, self.user)
@@ -488,9 +555,15 @@ class PortfolioViewTests(FinanceTestCase):
         self.assertContains(response, "$8,500.00")
 
     def test_other_users_portfolio_is_not_found(self):
-        self.assertEqual(self.client.get(self.url("detail", self.other_portfolio)).status_code, 404)
-        self.assertEqual(self.client.get(self.url("settings", self.other_portfolio)).status_code, 404)
-        response = self.client.post(self.url("cash", self.other_portfolio), {"action": "DEPOSIT", "amount": "5"})
+        self.assertEqual(
+            self.client.get(self.url("detail", self.other_portfolio)).status_code, 404
+        )
+        self.assertEqual(
+            self.client.get(self.url("settings", self.other_portfolio)).status_code, 404
+        )
+        response = self.client.post(
+            self.url("cash", self.other_portfolio), {"action": "DEPOSIT", "amount": "5"}
+        )
         self.assertEqual(response.status_code, 404)
         self.other_portfolio.refresh_from_db()
         self.assertEqual(self.other_portfolio.cash, Decimal("0"))
@@ -502,7 +575,14 @@ class PortfolioViewTests(FinanceTestCase):
     def test_buy_via_htmx_returns_body_partial(self):
         response = self.client.post(
             self.url("trade"),
-            {"side": "BUY", "symbol": "aapl", "quantity": "10", "price": "150", "fee": "", "use_cash": "on"},
+            {
+                "side": "BUY",
+                "symbol": "aapl",
+                "quantity": "10",
+                "price": "150",
+                "fee": "",
+                "use_cash": "on",
+            },
             **self.HTMX,
         )
         self.assertTemplateUsed(response, "portfolio/_portfolio_body.html")
@@ -512,7 +592,11 @@ class PortfolioViewTests(FinanceTestCase):
         self.assertEqual(self.portfolio.cash, Decimal("8500.00"))
 
     def test_buy_without_pay_from_cash_keeps_cash(self):
-        self.client.post(self.url("trade"), {"side": "BUY", "symbol": "AAPL", "quantity": "10", "price": "150"}, **self.HTMX)
+        self.client.post(
+            self.url("trade"),
+            {"side": "BUY", "symbol": "AAPL", "quantity": "10", "price": "150"},
+            **self.HTMX,
+        )
         self.portfolio.refresh_from_db()
         self.assertEqual(self.portfolio.cash, Decimal("10000.00"))
         self.assertEqual(self.portfolio.holdings.get().quantity, Decimal("10"))
@@ -520,7 +604,13 @@ class PortfolioViewTests(FinanceTestCase):
     def test_buy_with_insufficient_cash_shows_error(self):
         response = self.client.post(
             self.url("trade"),
-            {"side": "BUY", "symbol": "AAPL", "quantity": "1000", "price": "150", "use_cash": "on"},
+            {
+                "side": "BUY",
+                "symbol": "AAPL",
+                "quantity": "1000",
+                "price": "150",
+                "use_cash": "on",
+            },
             **self.HTMX,
         )
         self.assertContains(response, "Insufficient cash in portfolio.")
@@ -528,7 +618,9 @@ class PortfolioViewTests(FinanceTestCase):
 
     def test_invalid_trade_form_shows_field_errors(self):
         response = self.client.post(
-            self.url("trade"), {"side": "BUY", "symbol": "AA PL", "quantity": "-1", "price": "150"}, **self.HTMX,
+            self.url("trade"),
+            {"side": "BUY", "symbol": "AA PL", "quantity": "-1", "price": "150"},
+            **self.HTMX,
         )
         self.assertContains(response, "Use letters, numbers, dots or dashes")
         self.assertContains(response, "greater than or equal to")
@@ -537,32 +629,43 @@ class PortfolioViewTests(FinanceTestCase):
     def test_sell(self):
         self.portfolio.buy("AAPL", Decimal("10"), Decimal("150"))
         response = self.client.post(
-            self.url("trade"), {"side": "SELL", "symbol": "AAPL", "quantity": "4", "price": "200"}, **self.HTMX,
+            self.url("trade"),
+            {"side": "SELL", "symbol": "AAPL", "quantity": "4", "price": "200"},
+            **self.HTMX,
         )
         self.assertContains(response, "Sold 4 AAPL at $200.00.")
         self.assertEqual(self.portfolio.holdings.get().quantity, Decimal("6"))
 
     def test_sell_unknown_symbol_shows_error(self):
         response = self.client.post(
-            self.url("trade"), {"side": "SELL", "symbol": "MSFT", "quantity": "1", "price": "200"}, **self.HTMX,
+            self.url("trade"),
+            {"side": "SELL", "symbol": "MSFT", "quantity": "1", "price": "200"},
+            **self.HTMX,
         )
         self.assertContains(response, "No MSFT holding to sell.")
 
     def test_deposit_without_htmx_redirects_with_message(self):
-        response = self.client.post(self.url("cash"), {"action": "DEPOSIT", "amount": "250.50"}, follow=True)
+        response = self.client.post(
+            self.url("cash"), {"action": "DEPOSIT", "amount": "250.50"}, follow=True
+        )
         self.assertRedirects(response, self.url("detail"))
         self.assertContains(response, "Deposited $250.50.")
         self.portfolio.refresh_from_db()
         self.assertEqual(self.portfolio.cash, Decimal("10250.50"))
 
     def test_withdraw_overdraft_shows_error(self):
-        response = self.client.post(self.url("cash"), {"action": "WITHDRAW", "amount": "20000"}, **self.HTMX)
+        response = self.client.post(
+            self.url("cash"), {"action": "WITHDRAW", "amount": "20000"}, **self.HTMX
+        )
         self.assertContains(response, "Insufficient cash in portfolio.")
         self.portfolio.refresh_from_db()
         self.assertEqual(self.portfolio.cash, Decimal("10000.00"))
 
     def test_failed_trade_without_htmx_renders_full_page_with_errors(self):
-        response = self.client.post(self.url("trade"), {"side": "SELL", "symbol": "MSFT", "quantity": "1", "price": "1"})
+        response = self.client.post(
+            self.url("trade"),
+            {"side": "SELL", "symbol": "MSFT", "quantity": "1", "price": "1"},
+        )
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "portfolio/detail.html")
         self.assertContains(response, "No MSFT holding to sell.")
@@ -578,7 +681,9 @@ class PortfolioViewTests(FinanceTestCase):
         self.assertEqual(self.portfolio.holdings.get().market_value, Decimal("2000.00"))
 
     def test_settings_update(self):
-        response = self.client.post(self.url("settings"), {"name": "Long term", "is_public": "on"})
+        response = self.client.post(
+            self.url("settings"), {"name": "Long term", "is_public": "on"}
+        )
         self.assertRedirects(response, self.url("detail"))
         self.portfolio.refresh_from_db()
         self.assertEqual(self.portfolio.name, "Long term")
@@ -590,5 +695,7 @@ class PortfolioViewTests(FinanceTestCase):
         self.assertFalse(Portfolio.objects.filter(pk=self.portfolio.pk).exists())
 
     def test_cannot_delete_other_users_portfolio(self):
-        self.assertEqual(self.client.post(self.url("delete", self.other_portfolio)).status_code, 404)
+        self.assertEqual(
+            self.client.post(self.url("delete", self.other_portfolio)).status_code, 404
+        )
         self.assertTrue(Portfolio.objects.filter(pk=self.other_portfolio.pk).exists())

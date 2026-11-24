@@ -4,12 +4,15 @@ from django.shortcuts import get_object_or_404, redirect, render
 from .forms import SessionForm
 from .models import Session
 
+
 def add_session(request):
     form = SessionForm(request.POST or None)
     if request.method == "POST" and form.is_valid():
         form.save()
         return redirect("bankroll:dashboard")
-    return render(request, "bankroll/session_form.html", {"form": form, "is_edit": False})
+    return render(
+        request, "bankroll/session_form.html", {"form": form, "is_edit": False}
+    )
 
 
 def modify_session(request, session_id):
@@ -18,7 +21,12 @@ def modify_session(request, session_id):
     if request.method == "POST" and form.is_valid():
         form.save()
         return redirect("bankroll:dashboard")
-    return render(request, "bankroll/session_form.html", {"form": form, "is_edit": True, "session": session})
+    return render(
+        request,
+        "bankroll/session_form.html",
+        {"form": form, "is_edit": True, "session": session},
+    )
+
 
 def dashboard(request):
     sessions = Session.objects.order_by("-session_start")

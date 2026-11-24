@@ -4,20 +4,19 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('bankroll', '0002_alter_session_type'),
+        ("bankroll", "0002_alter_session_type"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='session',
-            name='buyin',
+            model_name="session",
+            name="buyin",
             field=models.PositiveIntegerField(default=0),
         ),
         migrations.AlterField(
-            model_name='session',
-            name='buyout',
+            model_name="session",
+            name="buyout",
             field=models.PositiveIntegerField(default=0),
         ),
     ]

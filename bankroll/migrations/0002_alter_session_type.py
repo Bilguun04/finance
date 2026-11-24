@@ -4,15 +4,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('bankroll', '0001_initial'),
+        ("bankroll", "0001_initial"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='session',
-            name='type',
+            model_name="session",
+            name="type",
             field=models.CharField(blank=True, max_length=100, null=True),
         ),
     ]

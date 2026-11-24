@@ -4,19 +4,18 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('portfolio', '0006_alter_holding_fraction_of_net_worth'),
+        ("portfolio", "0006_alter_holding_fraction_of_net_worth"),
     ]
 
     operations = [
         migrations.RenameField(
-            model_name='portfolio',
-            old_name='net_liquiduity',
-            new_name='net_liquidity',
+            model_name="portfolio",
+            old_name="net_liquiduity",
+            new_name="net_liquidity",
         ),
         migrations.RemoveField(
-            model_name='holding',
-            name='fraction_of_net_worth',
+            model_name="holding",
+            name="fraction_of_net_worth",
         ),
     ]

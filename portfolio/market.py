@@ -144,7 +144,9 @@ def get_market_status(now=None):
     after_close = holiday.get("after_close") or AFTER_HOURS_CLOSE
 
     # now.weekday(): Monday is 0
-    if _is_weekend_close(now.weekday(), clock, after_close) or (holiday and not holiday["close"]):
+    if _is_weekend_close(now.weekday(), clock, after_close) or (
+        holiday and not holiday["close"]
+    ):
         state = "closed"
     elif PRE_MARKET_OPEN <= clock < MARKET_OPEN:
         state = "pre_market"

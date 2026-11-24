@@ -10,11 +10,8 @@ dependencies = [
     "django-environ>=0.14.0",
     "django-htmx>=1.29.0",
     "finnhub-python>=2.4.30",
-    "gunicorn>=22.0,<23.0",
+    "gunicorn>=23.0,<24.0",
     "psycopg[binary]>=3.2,<4.0",
-    "pytest>=9.2.0",
-    "pytest-django>=4.14.0",
-    "python-dotenv>=1.0,<2.0",
     "whitenoise>=6.7,<7.0",
 ]
 
@@ -36,9 +33,11 @@ python_files = [
 [tool.ruff]
 line-length = 88
 target-version = "py312"
+extend-exclude = ["*/migrations/*"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I"]
+ignore = ["E501"]
 
 [tool.uv]
 package = false

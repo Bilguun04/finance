@@ -13,7 +13,9 @@ class FriendshipError(Exception):
 
 
 def _between(a, b):
-    return FriendRequest.objects.filter(Q(from_user=a, to_user=b) | Q(from_user=b, to_user=a))
+    return FriendRequest.objects.filter(
+        Q(from_user=a, to_user=b) | Q(from_user=b, to_user=a)
+    )
 
 
 def relationship(user, other):
@@ -34,10 +36,17 @@ def are_friends(a, b):
 
 def friends_of(user):
     accepted = FriendRequest.Status.ACCEPTED
-    return User.objects.filter(
-        Q(sent_friend_requests__to_user=user, sent_friend_requests__status=accepted)
-        | Q(received_friend_requests__from_user=user, received_friend_requests__status=accepted)
-    ).distinct().order_by("username")
+    return (
+        User.objects.filter(
+            Q(sent_friend_requests__to_user=user, sent_friend_requests__status=accepted)
+            | Q(
+                received_friend_requests__from_user=user,
+                received_friend_requests__status=accepted,
+            )
+        )
+        .distinct()
+        .order_by("username")
+    )
 
 
 def friendship(user, other):
@@ -45,11 +54,15 @@ def friendship(user, other):
 
 
 def incoming_requests(user):
-    return user.received_friend_requests.filter(status=FriendRequest.Status.PENDING).select_related("from_user")
+    return user.received_friend_requests.filter(
+        status=FriendRequest.Status.PENDING
+    ).select_related("from_user")
 
 
 def outgoing_requests(user):
-    return user.sent_friend_requests.filter(status=FriendRequest.Status.PENDING).select_related("to_user")
+    return user.sent_friend_requests.filter(
+        status=FriendRequest.Status.PENDING
+    ).select_related("to_user")
 
 
 def send_request(from_user, to_user):
@@ -77,7 +90,9 @@ def _accept(request):
 
 def _pending(request_id, **owner):
     try:
-        return FriendRequest.objects.get(pk=request_id, status=FriendRequest.Status.PENDING, **owner)
+        return FriendRequest.objects.get(
+            pk=request_id, status=FriendRequest.Status.PENDING, **owner
+        )
     except FriendRequest.DoesNotExist:
         raise FriendshipError("That friend request no longer exists.")
 
@@ -95,6 +110,8 @@ def cancel_request(user, request_id):
 
 
 def unfriend(user, other):
-    deleted, _ = _between(user, other).filter(status=FriendRequest.Status.ACCEPTED).delete()
+    deleted, _ = (
+        _between(user, other).filter(status=FriendRequest.Status.ACCEPTED).delete()
+    )
     if not deleted:
         raise FriendshipError(f"You're not friends with {other.username}.")
