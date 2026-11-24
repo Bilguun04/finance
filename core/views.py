@@ -1,14 +1,10 @@
-import os
-
 import finnhub
+from django.conf import settings
 from django.shortcuts import redirect, render
-from dotenv import load_dotenv
 
 from portfolio.market import QUOTE_CACHE_SECONDS, get_market_status, get_quotes
 
-load_dotenv()
-
-finnhub_client = finnhub.Client(api_key=os.getenv("FINNHUB_API_KEY"))
+finnhub_client = finnhub.Client(api_key=settings.FINNHUB_API_KEY)
 
 # Finnhub's free tier has no raw index data, so indexes are shown via the ETFs that track them.
 MARKET_INDEXES = [
