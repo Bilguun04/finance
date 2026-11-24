@@ -1,17 +1,44 @@
 [project]
 name = "finance"
 version = "0.1.0"
-description = "Add your description here"
+description = "Personal finance and bankroll management platform"
 readme = "README.md"
-authors = [
-    { name = "Bilguun04", email = "bilguunbek0607@gmail.com" }
+requires-python = ">=3.12,<3.15"
+
+dependencies = [
+    "django>=6.0,<6.1",
+    "django-environ>=0.14.0",
+    "django-htmx>=1.29.0",
+    "finnhub-python>=2.4.30",
+    "gunicorn>=22.0,<23.0",
+    "psycopg[binary]>=3.2,<4.0",
+    "pytest>=9.2.0",
+    "pytest-django>=4.14.0",
+    "python-dotenv>=1.0,<2.0",
+    "whitenoise>=6.7,<7.0",
 ]
-requires-python = ">=3.14"
-dependencies = []
 
-[project.scripts]
-finance = "finance:main"
+[dependency-groups]
+dev = [
+    "pytest>=9.2.0",
+    "pytest-django>=4.14.0",
+    "ruff>=0.17.6",
+]
 
-[build-system]
-requires = ["uv_build>=0.13.6,<0.14.0"]
-build-backend = "uv_build"
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "finance.testing"
+python_files = [
+    "tests.py",
+    "test_*.py",
+    "*_tests.py",
+]
+
+[tool.ruff]
+line-length = 88
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I"]
+
+[tool.uv]
+package = false
