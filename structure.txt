@@ -1,0 +1,198 @@
+.
+├── account
+│   ├── admin.py
+│   ├── apps.py
+│   ├── forms.py
+│   ├── __init__.py
+│   ├── migrations
+│   │   ├── 0001_initial.py
+│   │   ├── 0002_delete_profile.py
+│   │   ├── __init__.py
+│   │   └── __pycache__
+│   ├── models.py
+│   ├── __pycache__
+│   ├── seed
+│   │   └── seed.json
+│   ├── tests.py
+│   ├── urls.py
+│   └── views.py
+├── assets
+│   └── css
+│       └── tailwind.input.css
+├── bankroll
+│   ├── admin.py
+│   ├── apps.py
+│   ├── forms.py
+│   ├── __init__.py
+│   ├── migrations
+│   │   ├── 0001_initial.py
+│   │   ├── 0002_alter_session_type.py
+│   │   ├── 0003_alter_session_buyin_alter_session_buyout.py
+│   │   ├── __init__.py
+│   │   └── __pycache__
+│   ├── models.py
+│   ├── __pycache__
+│   ├── seed
+│   │   └── seed.json
+│   ├── tests.py
+│   ├── urls.py
+│   └── views.py
+├── core
+│   ├── admin.py
+│   ├── apps.py
+│   ├── __init__.py
+│   ├── migrations
+│   │   ├── __init__.py
+│   │   └── __pycache__
+│   ├── models.py
+│   ├── __pycache__
+│   ├── tests.py
+│   ├── urls.py
+│   └── views.py
+├── finance
+│   ├── asgi.py
+│   ├── __init__.py
+│   ├── __pycache__
+│   ├── settings.py
+│   ├── testing.py
+│   ├── urls.py
+│   └── wsgi.py
+├── manage.py
+├── package.json
+├── package-lock.json
+├── portfolio
+│   ├── admin.py
+│   ├── apps.py
+│   ├── dataclasses.py
+│   ├── forms.py
+│   ├── __init__.py
+│   ├── market.py
+│   ├── migrations
+│   │   ├── 0001_initial.py
+│   │   ├── 0002_remove_portfolio_user_delete_holding_and_more.py
+│   │   ├── 0003_initial.py
+│   │   ├── 0004_portfolio_net_liquiduity.py
+│   │   ├── 0005_remove_transaction_amount.py
+│   │   ├── 0006_alter_holding_fraction_of_net_worth.py
+│   │   ├── 0007_rename_net_liquiduity_portfolio_net_liquidity_and_more.py
+│   │   ├── 0008_alter_transaction_options_portfolio_created_at_and_more.py
+│   │   ├── __init__.py
+│   │   └── __pycache__
+│   ├── models.py
+│   ├── __pycache__
+│   ├── tests.py
+│   ├── urls.py
+│   └── views.py
+├── pyproject.toml
+├── pytest.ini
+├── README.md
+├── social
+│   ├── admin.py
+│   ├── apps.py
+│   ├── __init__.py
+│   ├── migrations
+│   │   ├── 0001_initial.py
+│   │   ├── 0002_remove_friendrequest_unique_friend_request_direction_and_more.py
+│   │   ├── 0003_initial.py
+│   │   ├── __init__.py
+│   │   └── __pycache__
+│   ├── models.py
+│   ├── __pycache__
+│   ├── services.py
+│   ├── tests.py
+│   ├── urls.py
+│   └── views.py
+├── src
+│   └── finance
+│       └── __init__.py
+├── static
+│   ├── asset
+│   │   └── signup.jpg
+│   ├── css
+│   │   └── tailwind.css
+│   ├── font
+│   │   ├── IBM_Plex_Sans_Condensed
+│   │   │   ├── IBMPlexSansCondensed-BoldItalic.ttf
+│   │   │   ├── IBMPlexSansCondensed-Bold.ttf
+│   │   │   ├── IBMPlexSansCondensed-ExtraLightItalic.ttf
+│   │   │   ├── IBMPlexSansCondensed-ExtraLight.ttf
+│   │   │   ├── IBMPlexSansCondensed-Italic.ttf
+│   │   │   ├── IBMPlexSansCondensed-LightItalic.ttf
+│   │   │   ├── IBMPlexSansCondensed-Light.ttf
+│   │   │   ├── IBMPlexSansCondensed-MediumItalic.ttf
+│   │   │   ├── IBMPlexSansCondensed-Medium.ttf
+│   │   │   ├── IBMPlexSansCondensed-Regular.ttf
+│   │   │   ├── IBMPlexSansCondensed-SemiBoldItalic.ttf
+│   │   │   ├── IBMPlexSansCondensed-SemiBold.ttf
+│   │   │   ├── IBMPlexSansCondensed-ThinItalic.ttf
+│   │   │   ├── IBMPlexSansCondensed-Thin.ttf
+│   │   │   └── OFL.txt
+│   │   └── Roboto_Condensed
+│   │       ├── OFL.txt
+│   │       ├── README.txt
+│   │       ├── RobotoCondensed-Italic-VariableFont_wght.ttf
+│   │       ├── RobotoCondensed-VariableFont_wght.ttf
+│   │       └── static
+│   │           ├── RobotoCondensed-BlackItalic.ttf
+│   │           ├── RobotoCondensed-Black.ttf
+│   │           ├── RobotoCondensed-BoldItalic.ttf
+│   │           ├── RobotoCondensed-Bold.ttf
+│   │           ├── RobotoCondensed-ExtraBoldItalic.ttf
+│   │           ├── RobotoCondensed-ExtraBold.ttf
+│   │           ├── RobotoCondensed-ExtraLightItalic.ttf
+│   │           ├── RobotoCondensed-ExtraLight.ttf
+│   │           ├── RobotoCondensed-Italic.ttf
+│   │           ├── RobotoCondensed-LightItalic.ttf
+│   │           ├── RobotoCondensed-Light.ttf
+│   │           ├── RobotoCondensed-MediumItalic.ttf
+│   │           ├── RobotoCondensed-Medium.ttf
+│   │           ├── RobotoCondensed-Regular.ttf
+│   │           ├── RobotoCondensed-SemiBoldItalic.ttf
+│   │           ├── RobotoCondensed-SemiBold.ttf
+│   │           ├── RobotoCondensed-ThinItalic.ttf
+│   │           └── RobotoCondensed-Thin.ttf
+│   └── js
+│       └── htmx.min.js
+├── structure.txt
+├── templates
+│   ├── account
+│   │   ├── _form_card.html
+│   │   ├── login.html
+│   │   ├── password_change_done.html
+│   │   ├── password_change_form.html
+│   │   ├── password_reset_complete.html
+│   │   ├── password_reset_confirm.html
+│   │   ├── password_reset_done.html
+│   │   ├── password_reset_email.txt
+│   │   ├── password_reset_form.html
+│   │   ├── password_reset_subject.txt
+│   │   ├── profile.html
+│   │   └── signup.html
+│   ├── bankroll
+│   │   ├── dashboard.html
+│   │   └── session_form.html
+│   ├── base.html
+│   ├── core
+│   │   ├── dashboard.html
+│   │   ├── landing.html
+│   │   ├── _market_card.html
+│   │   ├── _market_movers.html
+│   │   ├── _market_pulse.html
+│   │   ├── _market_snapshot.html
+│   │   └── _market_status.html
+│   ├── portfolio
+│   │   ├── _allocation.html
+│   │   ├── dashboard.html
+│   │   ├── detail.html
+│   │   ├── _field.html
+│   │   ├── _portfolio_body.html
+│   │   ├── _segmented.html
+│   │   ├── settings.html
+│   │   └── _signed_money.html
+│   └── social
+│       ├── _avatar.html
+│       ├── friend_profile.html
+│       └── friends.html
+└── uv.lock
+
+43 directories, 153 files
