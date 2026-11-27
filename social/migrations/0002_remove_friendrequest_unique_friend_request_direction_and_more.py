@@ -4,17 +4,16 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('social', '0001_initial'),
+        ("social", "0001_initial"),
     ]
 
     operations = [
         migrations.RemoveConstraint(
-            model_name='friendrequest',
-            name='unique_friend_request_direction',
+            model_name="friendrequest",
+            name="unique_friend_request_direction",
         ),
         migrations.DeleteModel(
-            name='FriendRequest',
+            name="FriendRequest",
         ),
     ]

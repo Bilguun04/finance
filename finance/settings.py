@@ -37,63 +37,63 @@ ALLOWED_HOSTS = env.list("DJANGO_ALLOWED_HOSTS", default=[])
 # Application definition
 
 INSTALLED_APPS = [
-    'django.contrib.auth',
-    'django.contrib.admin',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.staticfiles',
-    'django.contrib.messages',
-    'django_htmx',
-    'account',
-    'bankroll',
-    'core',
-    'portfolio',
-    'social',
+    "django.contrib.auth",
+    "django.contrib.admin",
+    "django.contrib.contenttypes",
+    "django.contrib.sessions",
+    "django.contrib.staticfiles",
+    "django.contrib.messages",
+    "django_htmx",
+    "account",
+    "bankroll",
+    "core",
+    "portfolio",
+    "social",
 ]
 
 MIDDLEWARE = [
-    'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django_htmx.middleware.HtmxMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
+    "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.common.CommonMiddleware",
+    "django.middleware.csrf.CsrfViewMiddleware",
+    "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "django_htmx.middleware.HtmxMiddleware",
+    "django.contrib.messages.middleware.MessageMiddleware",
+    "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-ROOT_URLCONF = 'finance.urls'
+ROOT_URLCONF = "finance.urls"
 
 TEMPLATES = [
     {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates'],
-        'APP_DIRS': True,
-        'OPTIONS': {
-            'context_processors': [
-                'django.template.context_processors.request',
-                'django.contrib.messages.context_processors.messages',
-                'django.contrib.auth.context_processors.auth',
+        "BACKEND": "django.template.backends.django.DjangoTemplates",
+        "DIRS": [BASE_DIR / "templates"],
+        "APP_DIRS": True,
+        "OPTIONS": {
+            "context_processors": [
+                "django.template.context_processors.request",
+                "django.contrib.messages.context_processors.messages",
+                "django.contrib.auth.context_processors.auth",
             ],
         },
     },
 ]
 
-WSGI_APPLICATION = 'finance.wsgi.application'
+WSGI_APPLICATION = "finance.wsgi.application"
 
-MESSAGE_STORAGE = 'django.contrib.messages.storage.cookie.CookieStorage'
+MESSAGE_STORAGE = "django.contrib.messages.storage.cookie.CookieStorage"
 
 
 # Database
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': env('POSTGRES_DB', default='finance'),
-        'USER': env('POSTGRES_USER', default='postgres'),
-        'PASSWORD': env('POSTGRES_PASSWORD', default='postgres'),
-        'HOST': env('POSTGRES_HOST', default='localhost'),
-        'PORT': env('POSTGRES_PORT', default='5432'),
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": env("POSTGRES_DB", default="finance"),
+        "USER": env("POSTGRES_USER", default="postgres"),
+        "PASSWORD": env("POSTGRES_PASSWORD", default="postgres"),
+        "HOST": env("POSTGRES_HOST", default="localhost"),
+        "PORT": env("POSTGRES_PORT", default="5432"),
     }
 }
 
@@ -102,26 +102,30 @@ DATABASES = {
 # https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
-    {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
-    {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
-    {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator'},
-    {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
+    {
+        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"
+    },
+    {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"},
+    {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator"},
+    {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
 ]
 
 
 # Email
 # Prints emails (e.g. password reset links) to the console unless configured.
 
-EMAIL_BACKEND = env('EMAIL_BACKEND', default='django.core.mail.backends.console.EmailBackend')
-DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL', default='no-reply@localhost')
+EMAIL_BACKEND = env(
+    "EMAIL_BACKEND", default="django.core.mail.backends.console.EmailBackend"
+)
+DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL", default="no-reply@localhost")
 
 
 # Internationalization
 # https://docs.djangoproject.com/en/6.0/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = "en-us"
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = "UTC"
 
 USE_I18N = True
 
@@ -131,30 +135,30 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
-STATIC_URL = 'static/'
-STATICFILES_DIRS = [BASE_DIR / 'static']
-STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATIC_URL = "static/"
+STATICFILES_DIRS = [BASE_DIR / "static"]
+STATIC_ROOT = BASE_DIR / "staticfiles"
 
 STORAGES = {
-    'default': {
-        'BACKEND': 'django.core.files.storage.FileSystemStorage',
+    "default": {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
     },
-    'staticfiles': {
-        'BACKEND': (
-            'django.contrib.staticfiles.storage.StaticFilesStorage'
+    "staticfiles": {
+        "BACKEND": (
+            "django.contrib.staticfiles.storage.StaticFilesStorage"
             if DEBUG
-            else 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+            else "whitenoise.storage.CompressedManifestStaticFilesStorage"
         ),
     },
 }
 
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 
 # Market data
-FINNHUB_API_KEY = env('FINNHUB_API_KEY', default='')
+FINNHUB_API_KEY = env("FINNHUB_API_KEY", default="")
 
 # Auth routes
-LOGIN_URL = 'account:login'
-LOGIN_REDIRECT_URL = 'portfolio:dashboard'
-LOGOUT_REDIRECT_URL = 'core:index'
+LOGIN_URL = "account:login"
+LOGIN_REDIRECT_URL = "portfolio:dashboard"
+LOGOUT_REDIRECT_URL = "core:index"

@@ -4,20 +4,19 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('portfolio', '0001_initial'),
+        ("portfolio", "0001_initial"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='portfolio',
-            name='user',
+            model_name="portfolio",
+            name="user",
         ),
         migrations.DeleteModel(
-            name='Holding',
+            name="Holding",
         ),
         migrations.DeleteModel(
-            name='Portfolio',
+            name="Portfolio",
         ),
     ]

@@ -1,0 +1,45 @@
+[project]
+name = "finance"
+version = "0.1.0"
+description = "Personal finance and bankroll management platform"
+readme = "README.md"
+requires-python = ">=3.12,<3.15"
+
+dependencies = [
+    "django>=6.0,<6.1",
+    "django-environ>=0.14.0",
+    "django-htmx>=1.29.0",
+    "finnhub-python>=2.4.30",
+    "gunicorn>=23.0,<24.0",
+    "psycopg[binary]>=3.2,<4.0",
+    "whitenoise>=6.7,<7.0",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=9.2.0",
+    "pytest-django>=4.14.0",
+    "ruff>=0.17.6",
+]
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "finance.settings"
+python_files = ["tests.py", "test_*.py", "*_tests.py"]
+testpaths = ["account", "bankroll", "core", "portfolio", "social"]
+filterwarnings = [
+    # WhiteNoise warns when STATIC_ROOT is missing; tests run with DEBUG=False
+    # but don't need collected static files.
+    "ignore:No directory at:UserWarning",
+]
+
+[tool.ruff]
+line-length = 88
+target-version = "py312"
+extend-exclude = ["*/migrations/*"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I"]
+ignore = ["E501"]
+
+[tool.uv]
+package = false

@@ -4,26 +4,38 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='Session',
+            name="Session",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('host', models.CharField(max_length=100)),
-                ('format', models.CharField(choices=[('homegame', 'Home game'), ('casino', 'Casino')], max_length=100)),
-                ('type', models.CharField(max_length=100)),
-                ('stakes', models.CharField(max_length=100)),
-                ('date', models.DateTimeField(auto_now_add=True)),
-                ('session_start', models.DateTimeField()),
-                ('session_end', models.DateTimeField()),
-                ('buyin', models.IntegerField(default=0)),
-                ('buyout', models.IntegerField(default=0)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("host", models.CharField(max_length=100)),
+                (
+                    "format",
+                    models.CharField(
+                        choices=[("homegame", "Home game"), ("casino", "Casino")],
+                        max_length=100,
+                    ),
+                ),
+                ("type", models.CharField(max_length=100)),
+                ("stakes", models.CharField(max_length=100)),
+                ("date", models.DateTimeField(auto_now_add=True)),
+                ("session_start", models.DateTimeField()),
+                ("session_end", models.DateTimeField()),
+                ("buyin", models.IntegerField(default=0)),
+                ("buyout", models.IntegerField(default=0)),
             ],
         ),
     ]

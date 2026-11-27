@@ -101,8 +101,12 @@ class FriendServiceTests(FinanceTestCase):
     def test_incoming_and_outgoing(self):
         sf.send_request(self.alice, self.bob)
         sf.send_request(self.carol, self.alice)
-        self.assertEqual([r.to_user for r in sf.outgoing_requests(self.alice)], [self.bob])
-        self.assertEqual([r.from_user for r in sf.incoming_requests(self.alice)], [self.carol])
+        self.assertEqual(
+            [r.to_user for r in sf.outgoing_requests(self.alice)], [self.bob]
+        )
+        self.assertEqual(
+            [r.from_user for r in sf.incoming_requests(self.alice)], [self.carol]
+        )
 
 
 class FriendRequestFlowTests(FinanceTestCase):
@@ -135,22 +139,33 @@ class FriendRequestFlowTests(FinanceTestCase):
         self.assertNotContains(response, "bob@example.com")
 
     def test_search_for_self(self):
-        response = self.client.get(reverse("social:friends"), {"q": self.alice.username})
+        response = self.client.get(
+            reverse("social:friends"), {"q": self.alice.username}
+        )
         self.assertEqual(response.context["match_relationship"], "self")
         self.assertContains(response, "That's you")
 
     def test_send_request_keeps_search(self):
-        response = self.client.post(reverse("social:send_request"), {"username": self.bob.username, "q": self.bob.username})
-        self.assertRedirects(response, reverse("social:friends") + "?q=bob%40example.com")
+        response = self.client.post(
+            reverse("social:send_request"),
+            {"username": self.bob.username, "q": self.bob.username},
+        )
+        self.assertRedirects(
+            response, reverse("social:friends") + "?q=bob%40example.com"
+        )
         self.assertEqual(sf.relationship(self.alice, self.bob), "sent")
 
     def test_send_request_to_unknown_user_404s(self):
-        response = self.client.post(reverse("social:send_request"), {"username": "nobody"})
+        response = self.client.post(
+            reverse("social:send_request"), {"username": "nobody"}
+        )
         self.assertEqual(response.status_code, 404)
 
     def test_duplicate_request_shows_error(self):
         sf.send_request(self.alice, self.bob)
-        response = self.client.post(reverse("social:send_request"), {"username": self.bob.username}, follow=True)
+        response = self.client.post(
+            reverse("social:send_request"), {"username": self.bob.username}, follow=True
+        )
         self.assertContains(response, "You already sent")
 
     def test_accept_and_decline(self):
@@ -169,7 +184,9 @@ class FriendRequestFlowTests(FinanceTestCase):
 
     def test_cannot_accept_someone_elses_request(self):
         request = sf.send_request(self.bob, self.carol)
-        response = self.client.post(reverse("social:accept_request", args=[request.id]), follow=True)
+        response = self.client.post(
+            reverse("social:accept_request", args=[request.id]), follow=True
+        )
         self.assertContains(response, "no longer exists")
         self.assertFalse(sf.are_friends(self.bob, self.carol))
 
@@ -180,7 +197,9 @@ class FriendRequestFlowTests(FinanceTestCase):
 
     def test_unfriend(self):
         sf.accept_request(self.alice, sf.send_request(self.bob, self.alice).id)
-        response = self.client.post(reverse("social:unfriend", args=[self.bob.username]))
+        response = self.client.post(
+            reverse("social:unfriend", args=[self.bob.username])
+        )
         self.assertRedirects(response, reverse("social:friends"))
         self.assertFalse(sf.are_friends(self.alice, self.bob))
 
@@ -202,10 +221,16 @@ class FriendPortfolioVisibilityTests(FinanceTestCase):
         self.alice = self.create_user("alice@example.com", display_name="Alice")
         self.bob = self.create_user("bob@example.com", display_name="Bob")
 
-        self.shared = Portfolio.objects.create(user=self.bob, name="Growth", is_public=True)
+        self.shared = Portfolio.objects.create(
+            user=self.bob, name="Growth", is_public=True
+        )
         self.shared.add_cash(Decimal("10000"))
-        self.shared.buy("AAPL", Decimal("10"), Decimal("150"))  # $1,500 of $10,000 = 15%
-        self.shared.buy("MSFT", Decimal("10"), Decimal("350"))  # $3,500 = 35%, cash $5,000 = 50%
+        self.shared.buy(
+            "AAPL", Decimal("10"), Decimal("150")
+        )  # $1,500 of $10,000 = 15%
+        self.shared.buy(
+            "MSFT", Decimal("10"), Decimal("350")
+        )  # $3,500 = 35%, cash $5,000 = 50%
         self.private = Portfolio.objects.create(user=self.bob, name="Secret stash")
         self.private.add_cash(Decimal("777"))
 
@@ -240,7 +265,17 @@ class FriendPortfolioVisibilityTests(FinanceTestCase):
 
         self.assertContains(response, "35.0%")
         self.assertNotContains(response, "$")
-        for amount in ["10000", "10,000", "3500", "3,500", "1500", "1,500", "5000", "5,000", "777"]:
+        for amount in [
+            "10000",
+            "10,000",
+            "3500",
+            "3,500",
+            "1500",
+            "1,500",
+            "5000",
+            "5,000",
+            "777",
+        ]:
             self.assertNotContains(response, amount)
 
     def test_unfriending_revokes_access(self):

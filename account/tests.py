@@ -91,9 +91,7 @@ class LoginTests(FinanceTestCase):
     def test_login_safe_next_honoured(self):
         next_url = reverse("account:profile")
 
-        response = self.client.post(
-            self.login_url, self.login_data(next=next_url)
-        )
+        response = self.client.post(self.login_url, self.login_data(next=next_url))
 
         self.assertRedirects(response, next_url, fetch_redirect_response=False)
 
@@ -216,9 +214,7 @@ class RegisterTests(FinanceTestCase):
                 )
 
                 self.assert_rejected(response, "username")
-                self.assertEqual(
-                    User.objects.filter(username__iexact="bob").count(), 1
-                )
+                self.assertEqual(User.objects.filter(username__iexact="bob").count(), 1)
 
     # Registration: Duplicate email rejected (case-insensitive)
     def test_registration_duplicate_email(self):
@@ -238,9 +234,7 @@ class RegisterTests(FinanceTestCase):
 
     # Registration: Email is required
     def test_registration_email_required(self):
-        response = self.client.post(
-            self.register_url, self.registration_data(email="")
-        )
+        response = self.client.post(self.register_url, self.registration_data(email=""))
 
         self.assert_rejected(response, "email")
         self.assertFalse(User.objects.filter(username="bob").exists())

@@ -1,16 +1,10 @@
 import finnhub
+from django.conf import settings
+from django.shortcuts import redirect, render
 
 from portfolio.market import QUOTE_CACHE_SECONDS, get_market_status, get_quotes
 
-from django.shortcuts import redirect, render
-from django.contrib.auth.decorators import login_required
-
-import os
-from dotenv import load_dotenv
-
-load_dotenv()
-
-finnhub_client = finnhub.Client(api_key=os.getenv("FINNHUB_API_KEY"))
+finnhub_client = finnhub.Client(api_key=settings.FINNHUB_API_KEY)
 
 # Finnhub's free tier has no raw index data, so indexes are shown via the ETFs that track them.
 MARKET_INDEXES = [
@@ -59,11 +53,20 @@ def market_snapshot(request):
 
     def rows(tickers):
         return [
-            {"symbol": symbol, "name": name, "quote": quotes[symbol], "range_pct": range_pct(quotes[symbol])}
+            {
+                "symbol": symbol,
+                "name": name,
+                "quote": quotes[symbol],
+                "range_pct": range_pct(quotes[symbol]),
+            }
             for symbol, name in tickers
         ]
 
-    context = {"indexes": rows(MARKET_INDEXES), "stocks": rows(MARKET_STOCKS), **_market_context()}
+    context = {
+        "indexes": rows(MARKET_INDEXES),
+        "stocks": rows(MARKET_STOCKS),
+        **_market_context(),
+    }
     return render(request, "core/_market_snapshot.html", context)
 
 
@@ -86,14 +89,23 @@ def market_pulse(request):
     # Bar lengths are relative to the biggest move of the day.
     biggest_move = max((abs(s["quote"]["change_pct"]) for s in stocks), default=0)
     for stock in stocks:
-        stock["bar_pct"] = abs(stock["quote"]["change_pct"]) / biggest_move * 100 if biggest_move else 0
+        stock["bar_pct"] = (
+            abs(stock["quote"]["change_pct"]) / biggest_move * 100
+            if biggest_move
+            else 0
+        )
 
     context = {
-        "headline": {"symbol": headline_symbol, "name": headline_name, "quote": quotes[headline_symbol]},
+        "headline": {
+            "symbol": headline_symbol,
+            "name": headline_name,
+            "quote": quotes[headline_symbol],
+        },
         "indexes": indexes,
         "gainers": [s for s in stocks if s["quote"]["change_pct"] > 0][:MOVERS_COUNT],
-        "losers": [s for s in reversed(stocks) if s["quote"]["change_pct"] < 0][:MOVERS_COUNT],
+        "losers": [s for s in reversed(stocks) if s["quote"]["change_pct"] < 0][
+            :MOVERS_COUNT
+        ],
         **_market_context(),
     }
     return render(request, "core/_market_pulse.html", context)
-

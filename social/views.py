@@ -34,13 +34,17 @@ def friends(request):
 
     # distinct=True: friends_of() joins the request tables, which would otherwise multiply the count.
     friend_list = services.friends_of(request.user).annotate(
-        shared_count=Count("portfolios", filter=Q(portfolios__is_public=True), distinct=True),
+        shared_count=Count(
+            "portfolios", filter=Q(portfolios__is_public=True), distinct=True
+        ),
     )
 
     context = {
         "query": query,
         "match": match,
-        "match_relationship": services.relationship(request.user, match) if match else None,
+        "match_relationship": services.relationship(request.user, match)
+        if match
+        else None,
         "incoming": services.incoming_requests(request.user),
         "outgoing": services.outgoing_requests(request.user),
         "friends": friend_list,
@@ -58,7 +62,10 @@ def send_request(request):
         messages.error(request, str(exc))
     else:
         if friend_request.status == friend_request.Status.ACCEPTED:
-            messages.success(request, f"{to_user.username} had already asked you. You're now friends!")
+            messages.success(
+                request,
+                f"{to_user.username} had already asked you. You're now friends!",
+            )
         else:
             messages.success(request, f"Friend request sent to {to_user.username}.")
     return _back_to_friends(request)
@@ -75,6 +82,7 @@ def _request_action(action, success_message):
         else:
             messages.success(request, success_message)
         return _back_to_friends(request)
+
     return view
 
 
@@ -108,5 +116,9 @@ def friend_profile(request, username):
         {"portfolio": portfolio, **portfolio.allocation()}
         for portfolio in friend.portfolios.filter(is_public=True).order_by("created_at")
     ]
-    context = {"friend": friend, "friends_since": friendship.responded_at, "shared": shared}
+    context = {
+        "friend": friend,
+        "friends_since": friendship.responded_at,
+        "shared": shared,
+    }
     return render(request, "social/friend_profile.html", context)

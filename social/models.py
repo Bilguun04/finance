@@ -13,9 +13,19 @@ class FriendRequest(models.Model):
         PENDING = "PENDING"
         ACCEPTED = "ACCEPTED"
 
-    from_user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="sent_friend_requests")
-    to_user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="received_friend_requests")
-    status = models.CharField(max_length=10, choices=Status.choices, default=Status.PENDING)
+    from_user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="sent_friend_requests",
+    )
+    to_user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="received_friend_requests",
+    )
+    status = models.CharField(
+        max_length=10, choices=Status.choices, default=Status.PENDING
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     responded_at = models.DateTimeField(null=True, blank=True)
 
@@ -24,6 +34,10 @@ class FriendRequest(models.Model):
 
     class Meta:
         constraints = [
-            models.UniqueConstraint(fields=["from_user", "to_user"], name="unique_friend_request_direction"),
-            models.CheckConstraint(condition=~Q(from_user=F("to_user")), name="no_self_friend_request"),
+            models.UniqueConstraint(
+                fields=["from_user", "to_user"], name="unique_friend_request_direction"
+            ),
+            models.CheckConstraint(
+                condition=~Q(from_user=F("to_user")), name="no_self_friend_request"
+            ),
         ]

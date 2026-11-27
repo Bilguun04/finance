@@ -31,8 +31,16 @@ def _body_context(portfolio, trade_form=None, cash_form=None, notice=None):
 
     for holding in holdings:
         holding.display_quantity = _trim(holding.quantity)
-        holding.weight = holding.market_value / net_liquidity * 100 if net_liquidity else Decimal("0")
-        holding.gain_pct = holding.unrealized_gain / holding.cost_basis * 100 if holding.cost_basis else Decimal("0")
+        holding.weight = (
+            holding.market_value / net_liquidity * 100
+            if net_liquidity
+            else Decimal("0")
+        )
+        holding.gain_pct = (
+            holding.unrealized_gain / holding.cost_basis * 100
+            if holding.cost_basis
+            else Decimal("0")
+        )
 
     transactions = list(portfolio.transactions.all()[:RECENT_TRANSACTIONS])
     for txn in transactions:
@@ -40,7 +48,9 @@ def _body_context(portfolio, trade_form=None, cash_form=None, notice=None):
         # Trades store a per-share price; cash movements store the amount itself in price.
         txn.amount = txn.quantity * txn.price if txn.quantity is not None else txn.price
 
-    realized = portfolio.transactions.filter(kind=Transaction.Kind.SELL).aggregate(total=Sum("realized_gain"))["total"]
+    realized = portfolio.transactions.filter(kind=Transaction.Kind.SELL).aggregate(
+        total=Sum("realized_gain")
+    )["total"]
     unrealized = market_value - cost_basis
 
     return {
@@ -53,7 +63,9 @@ def _body_context(portfolio, trade_form=None, cash_form=None, notice=None):
         "unrealized_gain": unrealized,
         "unrealized_pct": unrealized / cost_basis * 100 if cost_basis else Decimal("0"),
         "realized_gain": realized or Decimal("0"),
-        "cash_pct": portfolio.cash / net_liquidity * 100 if net_liquidity else Decimal("0"),
+        "cash_pct": portfolio.cash / net_liquidity * 100
+        if net_liquidity
+        else Decimal("0"),
         "trade_form": trade_form or TradeForm(),
         "cash_form": cash_form or CashForm(),
         "notice": notice,
@@ -78,10 +90,14 @@ def dashboard(request):
         portfolio = form.save(commit=False)
         portfolio.user = request.user
         portfolio.save()
-        messages.success(request, f"Created {portfolio.name}. Deposit some cash to start trading.")
+        messages.success(
+            request, f"Created {portfolio.name}. Deposit some cash to start trading."
+        )
         return redirect(DETAIL_URL, portfolio.pk)
 
-    portfolios = request.user.portfolios.annotate(num_holdings=Count("holdings")).order_by("created_at")
+    portfolios = request.user.portfolios.annotate(
+        num_holdings=Count("holdings")
+    ).order_by("created_at")
     context = {
         "portfolios": portfolios,
         "form": form,
@@ -108,15 +124,27 @@ def trade(request, pk):
     data = form.cleaned_data
     try:
         if data["side"] == "BUY":
-            portfolio.buy(data["symbol"], data["quantity"], data["price"], fee=data["fee"], use_cash=data["use_cash"])
+            portfolio.buy(
+                data["symbol"],
+                data["quantity"],
+                data["price"],
+                fee=data["fee"],
+                use_cash=data["use_cash"],
+            )
         else:
-            portfolio.sell(data["symbol"], data["quantity"], data["price"], fee=data["fee"])
+            portfolio.sell(
+                data["symbol"], data["quantity"], data["price"], fee=data["fee"]
+            )
     except ValueError as exc:
         form.add_error(None, str(exc))
         return _respond(request, portfolio, trade_form=form)
 
     verb = "Bought" if data["side"] == "BUY" else "Sold"
-    return _respond(request, portfolio, notice=f"{verb} {_trim(data['quantity'])} {data['symbol']} at ${data['price']:,.2f}.")
+    return _respond(
+        request,
+        portfolio,
+        notice=f"{verb} {_trim(data['quantity'])} {data['symbol']} at ${data['price']:,.2f}.",
+    )
 
 
 @login_required
@@ -157,7 +185,9 @@ def settings(request, pk):
         form.save()
         messages.success(request, "Portfolio settings saved.")
         return redirect(DETAIL_URL, portfolio.pk)
-    return render(request, "portfolio/settings.html", {"portfolio": portfolio, "form": form})
+    return render(
+        request, "portfolio/settings.html", {"portfolio": portfolio, "form": form}
+    )
 
 
 @login_required
