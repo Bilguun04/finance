@@ -23,11 +23,13 @@ dev = [
 ]
 
 [tool.pytest.ini_options]
-DJANGO_SETTINGS_MODULE = "finance.testing"
-python_files = [
-    "tests.py",
-    "test_*.py",
-    "*_tests.py",
+DJANGO_SETTINGS_MODULE = "finance.settings"
+python_files = ["tests.py", "test_*.py", "*_tests.py"]
+testpaths = ["account", "bankroll", "core", "portfolio", "social"]
+filterwarnings = [
+    # WhiteNoise warns when STATIC_ROOT is missing; tests run with DEBUG=False
+    # but don't need collected static files.
+    "ignore:No directory at:UserWarning",
 ]
 
 [tool.ruff]
